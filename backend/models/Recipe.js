@@ -7,12 +7,12 @@ const RecipeSchema = new schema ({
         type : String,
         required : true,
     },
-    description : {
-        type : String,
+    price : {
+        type : Number,
         required : true,
     },
-    ingredients : {
-        type : Array,
+    category : {
+        type : String,
         required : true,
     }
 },{timestamps : true});

@@ -9,8 +9,8 @@ router.get('',RecipesController.index)
 
 router.post('',[
     body('title').notEmpty(),
-    body('description').notEmpty(),
-    body('ingredients').notEmpty().isArray({min : 2}),
+    body('price').notEmpty(),
+    body('category').notEmpty(),
 ],handleErrorMessage,RecipesController.store)
 
 router.get('/:id',RecipesController.show)

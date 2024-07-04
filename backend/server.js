@@ -6,9 +6,15 @@ const morgan = require('morgan')
 
 const recipieRoutes = require('./routes/recipes')
 
+const categoryRoutes = require('./routes/category')
+
 const mongoose = require('mongoose')
 
+const cors = require ('cors')
+
 const app = express ()
+
+app.use(cors())
 
 const mongoURL = 'mongodb+srv://kha:test1234@mern-claster.75d8eo2.mongodb.net/?retryWrites=true&w=majority&appName=mern-claster'
 
@@ -29,3 +35,5 @@ app.get('/',(req,res)=> {
 })
 
 app.use('/api/recipes',recipieRoutes)
+
+app.use('/api/categories',categoryRoutes)

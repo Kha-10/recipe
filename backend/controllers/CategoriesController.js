@@ -1,23 +1,21 @@
-const Recipe = require("../models/Recipe")
+const Category = require("../models/Category")
 const mongoose = require ("mongoose")
 
-const RecipesController = {
+const CategoriesController = {
     index : async(req,res) => {
        try {
-        const recipe = await Recipe.find().sort({createdAt : -1})
-        return res.json(recipe)
+        const category = await Category.find().sort({createdAt : -1})
+        return res.json(category)
        } catch (error) {
         return res.status(500).json({msg : "Internrt Server Error"})
        }
     },
     store : async(req,res) => {
-        const {title,price,category} = req.body
-        const recipe = await Recipe.create({
-        title,
-        price,
-        category
+        const {title} = req.body
+        const categories = await Category.create({
+        title
         })
-        return res.json(recipe)
+        return res.json(categories)
     },
     show : async(req,res) => {
         try {
@@ -25,11 +23,11 @@ const RecipesController = {
             if(!mongoose.Types.ObjectId.isValid(id)) {
               return res.status(400).json({msg : "Invalid id"})
             }
-            let recipe = await Recipe.findById(id)
-            if(!recipe) {
-             return res.status(404).json({msg : "recipe not found"})
+            let category = await Category.findById(id)
+            if(!category) {
+             return res.status(404).json({msg : "category not found"})
             }
-            return res.json(recipe)
+            return res.json(category)
         } catch (error) {
             return res.status(500).json({msg : "Internrt Server Error"})
         }
@@ -40,11 +38,11 @@ const RecipesController = {
             if(!mongoose.Types.ObjectId.isValid(id)) {
               return res.status(400).json({msg : "Invalid id"})
             }
-            let recipe = await Recipe.findByIdAndDelete(id)
-            if(!recipe) {
-             return res.status(404).json({msg : "recipe not found"})
+            let category = await Category.findByIdAndDelete(id)
+            if(!category) {
+             return res.status(404).json({msg : "category not found"})
             }
-            return res.json(recipe)
+            return res.json(category)
         } catch (error) {
             return res.status(500).json({msg : "Internrt Server Error"})
         }
@@ -55,17 +53,17 @@ const RecipesController = {
             if(!mongoose.Types.ObjectId.isValid(id)) {
               return res.status(400).json({msg : "Invalid id"})
             }
-            let recipe = await Recipe.findByIdAndUpdate(id,{
+            let category = await Category.findByIdAndUpdate(id,{
                 ...req.body
             })
-            if(!recipe) {
-             return res.status(404).json({msg : "recipe not found"})
+            if(!category) {
+             return res.status(404).json({msg : "category not found"})
             }
-            return res.json(recipe)
+            return res.json(category)
         } catch (error) {
             return res.status(500).json({msg : "Internrt Server Error"})
         }
     },
 }
 
-module.exports = RecipesController
+module.exports = CategoriesController
