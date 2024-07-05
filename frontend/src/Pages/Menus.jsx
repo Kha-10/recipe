@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 function Menus() {
   const [isOpened, setIsOpened] = useState(false);
@@ -10,13 +18,6 @@ function Menus() {
   const [itemName, setItemName] = useState("");
   const [price, setPrice] = useState(0);
   const navigate = useNavigate();
-  // const {
-  //   register,
-  //   control,
-  //   handleSubmit,
-  //   watch,
-  //   formState: { errors },
-  // } = useForm();
 
   const saveItem = async () => {
     const url = "http://localhost:8000/api/recipes";
@@ -39,8 +40,9 @@ function Menus() {
       <div className="flex gap-6">
         <div className="bg-white w-[30%] h-fit text-sm p-3 shadow flex items-center justify-between">
           <p>Categories</p>
-          <Button className="bg-transparent text-orange-500 text-xs rounded h-0 py-3 px-2 shadow-sm border border-slate-200 gap-1 hover:bg-orange-500 hover:text-white">
-            <svg
+            <Dialog>
+              <DialogTrigger className="flex items-center bg-transparent h-0 text-orange-500 text-xs rounded py-3 px-2 shadow-sm border border-slate-200 gap-1 hover:bg-orange-500 hover:text-white">
+              <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -54,8 +56,18 @@ function Menus() {
                 d="M12 4.5v15m7.5-7.5h-15"
               />
             </svg>
-            Add
-          </Button>
+                Add
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
         </div>
         <div className="w-full rounded-xl">
           <div className="w-full bg-slate-50 rounded-t-lg shadow-sm border border-slate-200 p-5">
