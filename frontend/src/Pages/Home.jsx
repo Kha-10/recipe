@@ -10,10 +10,11 @@ function Home() {
     const fetchRecipes = async() => {
       const response = await axios.get('http://localhost:8000/api/recipes');
       setRecipes(response.data)
-      console.log(response);
+      console.log(response.data);
     }
     fetchRecipes ()
   },[])
+
 
   return (
     <div className="space-y-3 max-w-screen-sm mx-auto">

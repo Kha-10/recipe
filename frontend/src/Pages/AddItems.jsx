@@ -13,7 +13,6 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -68,7 +67,7 @@ function AddItems() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 bg-white p-5 rounded-lg shadow-sm border border-slate-200"
+          className="space-y-5 bg-white p-5 rounded-lg shadow-sm border border-slate-200"
         >
           <FormField
             control={form.control}
@@ -124,10 +123,8 @@ function AddItems() {
                   <FormControl className="w-[70%]">
                     <SelectTrigger>
                       <SelectValue
-                        placeholder="Select a verified email to display"
-                        // {...form.register("category", {
-                        //   required: "category is required",
-                        // })}
+                        placeholder="Select a category"
+                        {...field}
                       />
                     </SelectTrigger>
                   </FormControl>
@@ -142,7 +139,9 @@ function AddItems() {
                       ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
+                <FormMessage>
+                {form.formState.errors.category && <span>{form.formState.errors.category.message}</span>}
+              </FormMessage>
               </FormItem>
             )}
           />

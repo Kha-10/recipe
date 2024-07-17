@@ -45,11 +45,11 @@ const router = createBrowserRouter([
         element : <Menus/>
       },
       {
-        path : '/ordersettings',
+        path : '/orderSettings',
         element : <OrderSettings/>
       },
       {
-        path : '/menus/createCategory',
+        path : '/menus/addItems',
         element : <AddItems/>
       }
     ]
