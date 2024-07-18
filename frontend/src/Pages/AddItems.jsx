@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Form,
   FormControl,
@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 
 function AddItems() {
@@ -35,20 +34,37 @@ function AddItems() {
       category: "",
     },
   });
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const onSubmit = async(data) => {
+  const { id } = useParams();
+
+  const onSubmit = async (data) => {
     console.log(data);
-    const url = "http://localhost:8000/api/recipes";
-    try {
-        const res = await axios.post(url, data);
-        if (res.status === 200) {
-          navigate("/");
-        }
-    } catch (error) {
-      console.log(error);
-    }
+    // const url = "http://localhost:8000/api/recipes";
+    // try {
+    //   const res = await axios.post(url, data);
+    //   if (res.status === 200) {
+    //     navigate("/");
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
+
+  useEffect(() => {
+    const getMenu = async () => {
+      if (id) {
+        const url = "http://localhost:8000/api/recipes/" + id;
+        const res = await axios.get(url);
+        if (res.status == 200) {
+          form.setValue('title',res.data.title);
+          form.setValue('price',res.data.price);
+          form.setValue('category',res.data.category);
+        }
+      }
+    };
+    getMenu();
+  }, [id]);
 
   useEffect(() => {
     const getCategories = async () => {
@@ -113,19 +129,17 @@ function AddItems() {
           <FormField
             control={form.control}
             name="category"
+            rules={{ required: "Category is required" }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl className="w-[70%]">
                     <SelectTrigger>
-                      <SelectValue
-                        placeholder="Select a category"
-                        {...field}
-                      />
+                      <SelectValue placeholder="Select a category"/>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -140,8 +154,10 @@ function AddItems() {
                   </SelectContent>
                 </Select>
                 <FormMessage>
-                {form.formState.errors.category && <span>{form.formState.errors.category.message}</span>}
-              </FormMessage>
+                  {form.formState.errors.category && (
+                    <span>{form.formState.errors.category.message}</span>
+                  )}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -166,11 +182,7 @@ function AddItems() {
               </FormItem>
             )}
           /> */}
-          <Button
-            className="bg-orange-500 text-white"
-          >
-            Submit
-          </Button>
+          <Button className="bg-orange-500 text-white">Submit</Button>
         </form>
       </Form>
       <DevTool control={form.control} />

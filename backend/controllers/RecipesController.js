@@ -4,7 +4,7 @@ const mongoose = require ("mongoose")
 const RecipesController = {
     index : async(req,res) => {
        try {
-        const recipe = await Recipe.find().sort({createdAt : -1})
+        const recipe = await Recipe.find().populate('category').sort({createdAt : -1})
         return res.json(recipe)
        } catch (error) {
         return res.status(500).json({msg : "Internrt Server Error"})
@@ -21,11 +21,12 @@ const RecipesController = {
     },
     show : async(req,res) => {
         try {
-            let id = req.params.id
+            let id = req.params.categoryId
+            console.log(id);
             if(!mongoose.Types.ObjectId.isValid(id)) {
               return res.status(400).json({msg : "Invalid id"})
             }
-            let recipe = await Recipe.findById(id)
+            let recipe = await Recipe.find({category : id}).populate('category')
             if(!recipe) {
              return res.status(404).json({msg : "recipe not found"})
             }

@@ -28,7 +28,7 @@ function Menus() {
   const [isOpened, setIsOpened] = useState(false);
   const [categories, setCategories] = useState([]);
   const [recipes, setRecipes] = useState([]);
-  const [itemName, setItemName] = useState("");
+  const [categoryTitle, setCategoryTitle] = useState(null);
   const [price, setPrice] = useState(0);
   const navigate = useNavigate();
 
@@ -38,7 +38,6 @@ function Menus() {
     },
   });
 
-  const openDialog = () => setIsOpened(true);
   const closeDialog = () => setIsOpened(false);
 
   const getCategories = async () => {
@@ -49,19 +48,29 @@ function Menus() {
     }
   };
 
+  const getRecipes = async (id) => {
+    try {
+      let url = 'http://localhost:8000/api/recipes';
+      
+      // Append id to URL if provided
+      if (id) {
+        url += `/${id}`;
+      }
+  
+      const res = await axios.get(url);
+  
+      if (res.status === 200) {
+        setRecipes(res.data); // Assuming setRecipes updates state with fetched recipes
+      } else {
+        console.error('Failed to fetch recipes');
+      }
+    } catch (error) {
+      console.error('Error fetching recipes:', error);
+    }
+  };
+
   useEffect(() => {
     getCategories();
-  }, []);
-
-
-  useEffect(() => {
-    const getRecipes = async () => {
-      const url = "http://localhost:8000/api/recipes";
-      const res = await axios.get(url);
-      if (res.status == 200) {
-        setRecipes(res.data);
-      }
-    };
     getRecipes();
   }, []);
 
@@ -83,6 +92,12 @@ function Menus() {
   const getQuantity = (title, recipes) => {
     return recipes.filter((item) => item.category == title).length;
   };
+
+  const getSingleCategory = (id) => {
+    setCategoryTitle(id);
+    getRecipes(id);
+  };
+  console.log(recipes);
 
   return (
     <div className="max-w-screen-lg mx-auto ml-[300px]">
@@ -155,27 +170,31 @@ function Menus() {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="bg-white max-h-[88%] divide-y example divide-slate-100 overflow-y-auto">
+          <div className="bg-white max-h-[635px] divide-y example divide-slate-100 overflow-auto">
             {!!categories.length &&
               categories.map((category) => (
-                <div
+                <button
                   key={category._id}
-                  className="flex items-center justify-between p-3 text-sm hover:bg-slate-50 rounded"
+                  onClick={() => getSingleCategory(category._id)}
+                  className="w-full flex items-center justify-between p-3 text-sm hover:bg-slate-50 rounded"
                 >
                   <p>{category.title}</p>
                   <p>{getQuantity(category.title, recipes)}</p>
-                </div>
+                </button>
               ))}
           </div>
         </div>
-        <div className="w-full rounded-xl space-y-3">
-          {categories.map((category) => (
-            <div key={category._id} className="w-full bg-slate-50 rounded-t-lg shadow-sm border border-slate-200 p-5">
+        <div className="w-full rounded-xl space-y-2 max-h-[686px] overflow-y-auto example">
+          {recipes.map((recipe) => (
+            <div
+              key={recipe._id}
+              className="w-full bg-slate-50 rounded-t-lg shadow-sm border border-slate-200 p-5"
+            >
               <div className="flex items-center justify-between">
-                <p className="text-lg">{category.title}</p>
+                <p className="text-lg">{recipe.title}</p>
                 <Link
-                  to={"/menus/addItems"}
-                  className="text-white w-[100px] p-2 bg-orange-400 text-xs flex items-center justify-center gap-2 rounded"
+                  to={`/menus/editItems/${recipe._id}`}
+                  className="w-fit text-center p-1 bg-transparent border border-slate-300 text-orange-400 text-xs rounded"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -183,15 +202,14 @@ function Menus() {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="size-3"
+                    className="size-4"
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M12 4.5v15m7.5-7.5h-15"
+                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
                     />
                   </svg>
-                  Add item
                 </Link>
               </div>
             </div>

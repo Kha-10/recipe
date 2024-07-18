@@ -12,7 +12,8 @@ const RecipeSchema = new schema ({
         required : true,
     },
     category : {
-        type : String,
+        type : schema.Types.ObjectId,
+        ref : 'Category',
         required : true,
     }
 },{timestamps : true});

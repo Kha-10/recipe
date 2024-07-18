@@ -51,6 +51,10 @@ const router = createBrowserRouter([
       {
         path : '/menus/addItems',
         element : <AddItems/>
+      },
+      {
+        path : '/menus/editItems/:id',
+        element : <AddItems/>
       }
     ]
   },
