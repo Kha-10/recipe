@@ -29,7 +29,7 @@ function Menus() {
   const [categories, setCategories] = useState([]);
   const [recipes, setRecipes] = useState([]);
   const [menus, setMenus] = useState([]);
-  const [categoryTitle, setCategoryTitle] = useState(null);
+  const [categoryId, setCategoryId] = useState(null);
   const [price, setPrice] = useState(0);
   const navigate = useNavigate();
 
@@ -70,7 +70,7 @@ function Menus() {
   };
 
   const getMenusBycategory = async (id) => {
-    console.log('gg');
+    console.log("gg");
     try {
       let url = "http://localhost:8000/api/recipes/" + id;
       const res = await axios.get(url);
@@ -112,7 +112,7 @@ function Menus() {
   };
 
   const getSingleCategory = (id) => {
-    setCategoryTitle(id);
+    setCategoryId(id);
     getMenusBycategory(id);
   };
   console.log(menus);
@@ -120,7 +120,7 @@ function Menus() {
   return (
     <div className="max-w-screen-lg mx-auto ml-[300px]">
       <div className="flex gap-6">
-        <div className="w-[30%] flex flex-col">
+        <div className="w-[30%] flex flex-col shadow-sm border border-slate-200">
           <div className="bg-white border-b border-slate-200 rounded-t-lg h-fit text-sm p-3 flex items-center justify-between">
             <Dialog open={isOpened} onOpenChange={setIsOpened}>
               <DialogTrigger asChild>
@@ -128,7 +128,7 @@ function Menus() {
                   <p>Categories</p>
                   <Button
                     variant="outline"
-                    className="text-orange-400 w-fit h-fit py-1 px-2 bg-transparent text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
+                    className="text-orange-400 w-[80px] h-[30px] py-1 px-2 bg-transparent text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -144,7 +144,7 @@ function Menus() {
                         d="M12 4.5v15m7.5-7.5h-15"
                       />
                     </svg>
-                    Add
+                    <p>Add</p>
                   </Button>
                 </div>
               </DialogTrigger>
@@ -194,7 +194,11 @@ function Menus() {
                 <button
                   key={category._id}
                   onClick={() => getSingleCategory(category._id)}
-                  className="w-full flex items-center justify-between p-3 text-sm hover:bg-slate-50 rounded"
+                  className={`w-full ${
+                    categoryId == category._id
+                      ? "bg-orange-50"
+                      : "bg-transparent"
+                  } flex items-center justify-between p-3 text-sm hover:bg-orange-50 rounded`}
                 >
                   <p>{category.title}</p>
                   <p>{getQuantity(category._id, recipes)}</p>
@@ -202,36 +206,58 @@ function Menus() {
               ))}
           </div>
         </div>
-        <div className="w-full rounded-xl space-y-2 max-h-[686px] overflow-y-auto example">
-          {menus.map((menu) => (
-            <div
-              key={menu._id}
-              className="w-full bg-slate-50 rounded-t-lg shadow-sm border border-slate-200 p-5"
+        <div className="w-full h-fit shadow-sm border border-slate-200">
+          <div className="w-full flex items-center justify-between p-4 bg-white border-b border-slate-200 rounded-t-lg">
+            <p>Items</p>
+            <Link
+              to={"/menus/addItems"}
+              className="text-white w-[100px] h-[30px] py-1 px-2 bg-orange-400 text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
             >
-              <div className="flex items-center justify-between">
-                <p className="text-base">{menu.title}</p>
-                <Link
-                  to={`/menus/editItems/${menu._id}`}
-                  className="w-fit text-center p-1 bg-transparent border border-slate-300 text-orange-400 text-xs rounded"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-4"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-3"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              <p>Add item</p>
+            </Link>
+          </div>
+          <div className="w-full max-h-[686px] overflow-y-auto divide-y example">
+            {menus.map((menu) => (
+              <div key={menu._id} className="w-full bg-white p-5">
+                <div className="flex items-center justify-between">
+                  <p className="text-base">{menu.title}</p>
+                  <Link
+                    to={`/menus/editItems/${menu._id}`}
+                    className="w-fit text-center p-1 bg-transparent border border-slate-300 text-orange-400 text-xs rounded"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                    />
-                  </svg>
-                </Link>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-4"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                      />
+                    </svg>
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
