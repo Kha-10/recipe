@@ -39,12 +39,15 @@ function AddItems() {
   const { id } = useParams();
 
   const onSubmit = async (data) => {
-    console.log(data);
-    const url = "http://localhost:8000/api/recipes";
     try {
-      const res = await axios.post(url, data);
-      if (res.status === 200) {
-        navigate("/");
+      let res;
+      if(id) {
+        res = await axios.patch("http://localhost:8000/api/recipes/"+id,data)
+      }else {
+        res = await axios.post("http://localhost:8000/api/recipes/",data)
+      }
+      if(res.status == 200) {
+        navigate('/')
       }
     } catch (error) {
       console.log(error);
@@ -79,7 +82,7 @@ function AddItems() {
   }, []);
 
   return (
-    <div className="space-y-3 max-w-screen-md mx-auto">
+    <div className="space-y-3 max-w-screen-sm mx-auto ml-[300px]">
       <h1 className="text-xl font-semibold">{id ? 'Edit item' : 'Add item'}</h1>
       <Form {...form}>
         <form
