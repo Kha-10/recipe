@@ -40,15 +40,15 @@ function AddItems() {
 
   const onSubmit = async (data) => {
     console.log(data);
-    // const url = "http://localhost:8000/api/recipes";
-    // try {
-    //   const res = await axios.post(url, data);
-    //   if (res.status === 200) {
-    //     navigate("/");
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    const url = "http://localhost:8000/api/recipes";
+    try {
+      const res = await axios.post(url, data);
+      if (res.status === 200) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -56,10 +56,11 @@ function AddItems() {
       if (id) {
         const url = "http://localhost:8000/api/recipes/" + id;
         const res = await axios.get(url);
+        console.log(res.data);
         if (res.status == 200) {
           form.setValue('title',res.data.title);
           form.setValue('price',res.data.price);
-          form.setValue('category',res.data.category);
+          form.setValue('category',res.data.category?._id);
         }
       }
     };
@@ -79,7 +80,7 @@ function AddItems() {
 
   return (
     <div className="space-y-3 max-w-screen-md mx-auto">
-      <h1 className="text-xl font-semibold">Add item</h1>
+      <h1 className="text-xl font-semibold">{id ? 'Edit item' : 'Add item'}</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -146,7 +147,7 @@ function AddItems() {
                     {!!categories.length &&
                       categories.map((category) => (
                         <div key={category._id}>
-                          <SelectItem value={category.title}>
+                          <SelectItem value={category._id}>
                             {category.title}
                           </SelectItem>
                         </div>
@@ -182,7 +183,7 @@ function AddItems() {
               </FormItem>
             )}
           /> */}
-          <Button className="bg-orange-500 text-white">Submit</Button>
+          <Button className="bg-orange-500 text-white">{id ? "Update" :"Submit"}</Button>
         </form>
       </Form>
       <DevTool control={form.control} />

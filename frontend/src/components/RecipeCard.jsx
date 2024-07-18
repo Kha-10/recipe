@@ -5,7 +5,7 @@ function RecipeCard({recipe}) {
         <p>{recipe.description}</p>
         <div className="space-x-1">
          <span className="text-orange-500 bg-orange-50 border border-slate-200 text-xs px-2 py-1 rounded">
-           {recipe.category}
+           {recipe?.category?.title}
           </span>
         </div>
         <p className="font-medium">฿{recipe.price}</p>

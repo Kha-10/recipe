@@ -28,6 +28,7 @@ function Menus() {
   const [isOpened, setIsOpened] = useState(false);
   const [categories, setCategories] = useState([]);
   const [recipes, setRecipes] = useState([]);
+  const [menus, setMenus] = useState([]);
   const [categoryTitle, setCategoryTitle] = useState(null);
   const [price, setPrice] = useState(0);
   const navigate = useNavigate();
@@ -48,24 +49,39 @@ function Menus() {
     }
   };
 
-  const getRecipes = async (id) => {
+  const getRecipes = async () => {
     try {
-      let url = 'http://localhost:8000/api/recipes';
-      
-      // Append id to URL if provided
-      if (id) {
-        url += `/${id}`;
-      }
-  
+      let url = "http://localhost:8000/api/recipes";
+      // if (id) {
+      //   url += `/${id}`;
+      // }
+
       const res = await axios.get(url);
-  
+
       if (res.status === 200) {
-        setRecipes(res.data); // Assuming setRecipes updates state with fetched recipes
+        setRecipes(res.data);
+        setMenus(res.data);
       } else {
-        console.error('Failed to fetch recipes');
+        console.error("Failed to fetch recipes");
       }
     } catch (error) {
-      console.error('Error fetching recipes:', error);
+      console.error("Error fetching recipes:", error);
+    }
+  };
+
+  const getMenusBycategory = async (id) => {
+    console.log('gg');
+    try {
+      let url = "http://localhost:8000/api/recipes/" + id;
+      const res = await axios.get(url);
+
+      if (res.status === 200) {
+        setMenus(res.data);
+      } else {
+        console.error("Failed to fetch recipes");
+      }
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
     }
   };
 
@@ -73,6 +89,8 @@ function Menus() {
     getCategories();
     getRecipes();
   }, []);
+
+  // console.log(recipes);
 
   const onSubmit = async (data) => {
     try {
@@ -89,15 +107,15 @@ function Menus() {
     }
   };
 
-  const getQuantity = (title, recipes) => {
-    return recipes.filter((item) => item.category == title).length;
+  const getQuantity = (id, recipes) => {
+    return recipes.filter((item) => item.category?._id == id).length;
   };
 
   const getSingleCategory = (id) => {
     setCategoryTitle(id);
-    getRecipes(id);
+    getMenusBycategory(id);
   };
-  console.log(recipes);
+  console.log(menus);
 
   return (
     <div className="max-w-screen-lg mx-auto ml-[300px]">
@@ -179,21 +197,21 @@ function Menus() {
                   className="w-full flex items-center justify-between p-3 text-sm hover:bg-slate-50 rounded"
                 >
                   <p>{category.title}</p>
-                  <p>{getQuantity(category.title, recipes)}</p>
+                  <p>{getQuantity(category._id, recipes)}</p>
                 </button>
               ))}
           </div>
         </div>
         <div className="w-full rounded-xl space-y-2 max-h-[686px] overflow-y-auto example">
-          {recipes.map((recipe) => (
+          {menus.map((menu) => (
             <div
-              key={recipe._id}
+              key={menu._id}
               className="w-full bg-slate-50 rounded-t-lg shadow-sm border border-slate-200 p-5"
             >
               <div className="flex items-center justify-between">
-                <p className="text-lg">{recipe.title}</p>
+                <p className="text-base">{menu.title}</p>
                 <Link
-                  to={`/menus/editItems/${recipe._id}`}
+                  to={`/menus/editItems/${menu._id}`}
                   className="w-fit text-center p-1 bg-transparent border border-slate-300 text-orange-400 text-xs rounded"
                 >
                   <svg

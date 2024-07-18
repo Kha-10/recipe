@@ -13,7 +13,7 @@ router.post('',[
     body('category').notEmpty(),
 ],handleErrorMessage,RecipesController.store)
 
-router.get('/:categoryId',RecipesController.show)
+router.get('/:id',RecipesController.show)
 
 router.delete('/:id',RecipesController.destroy)
 
