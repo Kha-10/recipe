@@ -128,11 +128,11 @@ function Menus() {
     <div className="max-w-screen-lg mx-auto ml-[300px] overflow-hidden">
       <div className="flex gap-6">
         <div className="w-[30%] flex flex-col shadow-sm border border-slate-200">
-          <div className="bg-white border-b border-slate-200 rounded-t-lg h-fit text-sm p-3 flex items-center justify-between">
+          <div className="w-full bg-white border-b border-slate-200 rounded-t-lg h-fit text-sm p-3 flex items-center justify-between">
+            <p>Categories</p>
             <Dialog open={isOpened} onOpenChange={setIsOpened}>
               <DialogTrigger asChild>
-                <div className="w-full flex items-center justify-between">
-                  <p>Categories</p>
+                <div className="w-full flex items-center justify-end">
                   <Button
                     variant="outline"
                     className="text-orange-400 w-[80px] h-[30px] py-1 px-2 bg-transparent text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
