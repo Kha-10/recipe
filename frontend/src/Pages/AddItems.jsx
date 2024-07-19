@@ -50,7 +50,7 @@ function AddItems() {
         navigate('/')
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error submitting the form", error);
     }
   };
 

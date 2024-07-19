@@ -20,6 +20,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,20 +47,29 @@ function Menus() {
 
   const closeDialog = () => setIsOpened(false);
 
-  const getCategories = async () => {
-    const url = "http://localhost:8000/api/categories";
-    const res = await axios.get(url);
-    if (res.status == 200) {
-      setCategories(res.data);
+  const getCategories = async (id) => {
+    try {
+      let res;
+      if (id) {
+        setCategoryId(id);
+        res = await axios.get("http://localhost:8000/api/categories/" + id);
+        if (res.status == 200) {
+          form.setValue("title", res.data.title);
+        }
+      } else {
+        res = await axios.get("http://localhost:8000/api/categories/");
+        if (res.status == 200) {
+          setCategories(res.data);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
     }
   };
 
   const getRecipes = async () => {
     try {
       let url = "http://localhost:8000/api/recipes";
-      // if (id) {
-      //   url += `/${id}`;
-      // }
 
       const res = await axios.get(url);
 
@@ -70,7 +85,6 @@ function Menus() {
   };
 
   const getMenusBycategory = async (id) => {
-    console.log("gg");
     try {
       let url = "http://localhost:8000/api/recipes/" + id;
       const res = await axios.get(url);
@@ -90,13 +104,17 @@ function Menus() {
     getRecipes();
   }, []);
 
-  // console.log(recipes);
-
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post("http://localhost:8000/api/categories", {
-        title: data.title,
-      });
+      let res;
+      if (categoryId) {
+        res = await axios.patch(
+          "http://localhost:8000/api/categories/" + categoryId,
+          data
+        );
+      } else {
+        res = await axios.post("http://localhost:8000/api/categories", data);
+      }
       if (res.status === 200) {
         closeDialog();
         form.setValue("title", "");
@@ -116,11 +134,26 @@ function Menus() {
     getMenusBycategory(id);
   };
 
-  const deleteHandler = async(id) => {
-    const res = await axios.delete("http://localhost:8000/api/recipes/" + id)
-    if(res.status== 200) {
-      setMenus(prev => prev.filter(p => p._id !== id))
-      setRecipes(prev => prev.filter(p => p._id !== id))
+  const deleteHandler = async (id) => {
+    try {
+      const res = await axios.delete("http://localhost:8000/api/recipes/" + id);
+      if (res.status == 200) {
+        setMenus((prev) => prev.filter((p) => p._id !== id));
+        setRecipes((prev) => prev.filter((p) => p._id !== id));
+      }
+    } catch (error) {
+      console.error("Error deleting the form", error);
+    }
+  };
+
+  const deleteCategoryHandler = async (id) => {
+    try {
+      const res = await axios.delete("http://localhost:8000/api/categories/" + id);
+      if (res.status == 200) {
+        setCategories((prev) => prev.filter((p) => p._id !== id));
+      }
+    } catch (error) {
+      console.error("Error deleting the form", error);
     }
   }
 
@@ -188,7 +221,7 @@ function Menus() {
                       type="submit"
                       className="bg-orange-400 hover:bg-orange-400"
                     >
-                      Submit
+                      {categoryId ? "Update" : "Submit"}
                     </Button>
                   </form>
                 </Form>
@@ -198,7 +231,7 @@ function Menus() {
           <div className="bg-white max-h-[635px] divide-y example divide-slate-100 overflow-auto">
             {!!categories.length &&
               categories.map((category) => (
-                <button
+                <div
                   key={category._id}
                   onClick={() => getSingleCategory(category._id)}
                   className={`w-full ${
@@ -208,8 +241,41 @@ function Menus() {
                   } flex items-center justify-between p-3 text-sm hover:bg-orange-50 rounded`}
                 >
                   <p>{category.title}</p>
-                  <p>{getQuantity(category._id, recipes)}</p>
-                </button>
+                  <div className="flex items-center gap-2">
+                    <p>{getQuantity(category._id, recipes)}</p>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-4 rotate-90"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                          />
+                        </svg>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setIsOpened(true);
+                            getCategories(category._id);
+                          }}
+                        >
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => deleteCategoryHandler(category._id)}>
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
               ))}
           </div>
         </div>
@@ -262,7 +328,10 @@ function Menus() {
                         />
                       </svg>
                     </Link>
-                    <button className="w-fit text-center p-1 bg-red-500 text-white border border-slate-300 text-xs rounded" onClick={()=>deleteHandler(menu._id)}>
+                    <button
+                      className="w-fit text-center p-1 bg-red-500 text-white border border-slate-300 text-xs rounded"
+                      onClick={() => deleteHandler(menu._id)}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
