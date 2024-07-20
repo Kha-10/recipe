@@ -165,27 +165,6 @@ function AddItems() {
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="photo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Photo</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    placeholder="Enter the amount"
-                    className="w-[70%]"
-                    {...field}
-                    {...form.register("photo", {
-                      required: "Photo is required",
-                    })}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           <Button className="bg-orange-500 text-white">{id ? "Update" :"Submit"}</Button>
         </form>
       </Form>
