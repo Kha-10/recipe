@@ -4,10 +4,34 @@ const mongoose = require("mongoose");
 const RecipesController = {
   index: async (req, res) => {
     try {
+      let limit = 6;
+      const page = req.query.page || 1;
       const recipe = await Recipe.find()
         .populate("category")
+        .skip((page -1)*limit)
+        .limit(limit)
         .sort({ createdAt: -1 });
-      return res.json(recipe);
+
+        let totalPages = await Recipe.countDocuments();
+        let totalPagesCount = Math.ceil(totalPages/limit)
+
+        let pagination = {
+            isNextPage : totalPagesCount == page ? false : true,
+            isPreviousPage : page == 1 ? false : true,
+            currentPage :page,
+            links :[]
+          }
+
+        for (let index = 0; index < totalPagesCount; index++) {
+            let number = index+1
+            pagination.links.push({number})
+        }
+
+        let response = {
+            data :recipe,
+            pagination
+        }
+      return res.json(response);
     } catch (error) {
       return res.status(500).json({ msg: "Internrt Server Error" });
     }

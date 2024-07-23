@@ -12,12 +12,9 @@ function Menus() {
       let url = "http://localhost:8000/api/recipes";
 
       const res = await axios.get(url);
-
       if (res.status === 200) {
-        setRecipes(res.data);
-        setMenus(res.data);
-      } else {
-        console.error("Failed to fetch recipes");
+        setRecipes(res.data.data);
+        setMenus(res.data.data);
       }
     } catch (error) {
       console.error("Error fetching recipes:", error);
