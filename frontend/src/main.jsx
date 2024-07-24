@@ -14,6 +14,7 @@ import Orders from './Pages/Orders.jsx';
 import Menus from './Pages/Menus.jsx';
 import OrderSettings from './Pages/OrderSettings.jsx';
 import AddItems from './Pages/AddItems.jsx';
+import SignUpForm from './Pages/SignUpForm.jsx';
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
       {
         path : '/menus/editItems/:id',
         element : <AddItems/>
+      },
+      {
+        path : '/sign-up',
+        element : <SignUpForm/>
       }
     ]
   },

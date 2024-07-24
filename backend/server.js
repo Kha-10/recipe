@@ -8,9 +8,13 @@ const recipieRoutes = require('./routes/recipes')
 
 const categoryRoutes = require('./routes/category')
 
+const userRoutes = require('./routes/users')
+
 const mongoose = require('mongoose')
 
 const cors = require ('cors')
+
+const cookieParser = require('cookie-parser')
 
 const app = express ()
 
@@ -30,6 +34,10 @@ app.use(express.json())
 
 app.use(morgan('dev'))
 
+app.use(morgan('dev'))
+
+app.use(cookieParser())
+
 app.get('/',(req,res)=> {
     res.json({hello : 'world'})
 })
@@ -37,3 +45,15 @@ app.get('/',(req,res)=> {
 app.use('/api/recipes',recipieRoutes)
 
 app.use('/api/categories',categoryRoutes)
+
+app.use('/api/users',userRoutes)
+
+app.get('/cookie',(req,res)=> {
+    res.cookie('gg','wp',{httpOnly : true})
+    return res.send('ggwp')
+})
+
+app.get('/get-cookie',(req,res)=> {
+    let cookies = req.cookies
+    return res.send(cookies)
+})
