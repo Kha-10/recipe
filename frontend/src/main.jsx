@@ -15,6 +15,7 @@ import Menus from './Pages/Menus.jsx';
 import OrderSettings from './Pages/OrderSettings.jsx';
 import AddItems from './Pages/AddItems.jsx';
 import SignUpForm from './Pages/SignUpForm.jsx';
+import SignInForm from './Pages/SignInForm.jsx';
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
       {
         path : '/sign-up',
         element : <SignUpForm/>
+      },
+      {
+        path : '/sign-in',
+        element : <SignInForm/>
       }
     ]
   },

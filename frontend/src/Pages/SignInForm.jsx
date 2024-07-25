@@ -15,32 +15,32 @@ import axios from "axios";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-function SignUpForm() {
-  const [errors, setErrors] = useState(null);
+function SignInForm() {
+  const [error, setError] = useState(null);
   let navigate = useNavigate();
   const form = useForm({
     defaultValues: {
-      username: "",
       email: "",
       password: "",
     },
   });
   const onSubmit = async (data) => {
     try {
-      setErrors(null);
+      setError(null);
       let res = await axios.post(
-        "http://localhost:8000/api/users/register",
+        "http://localhost:8000/api/users/login",
         data,
         {
           withCredentials: true,
         }
       );
+      console.log(res);
       if (res.status == 200) {
         navigate("/");
       }
     } catch (error) {
       console.log("Error submitting the form", error);
-      setErrors(error.response.data.errors);
+      setError(error.response.data.error);
     }
   };
 
@@ -53,31 +53,6 @@ function SignUpForm() {
         >
           <FormField
             control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Username"
-                    autoComplete="username"
-                    className="w-full"
-                    {...field}
-                    {...form.register("username", {
-                      required: "Username is required",
-                    })}
-                  />
-                </FormControl>
-                <FormMessage>
-                  {!!(errors && errors.username) && (
-                    <span>{errors.username.msg}</span>
-                  )}
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -86,17 +61,13 @@ function SignUpForm() {
                   <Input
                     placeholder="Email"
                     className="w-full"
+                    autoComplete="email"
                     {...field}
                     {...form.register("email", {
                       required: "Email is required",
                     })}
                   />
                 </FormControl>
-                <FormMessage>
-                  {!!(errors && errors.email) && (
-                    <span>{errors.email.msg}</span>
-                  )}
-                </FormMessage>
               </FormItem>
             )}
           />
@@ -119,8 +90,8 @@ function SignUpForm() {
                   />
                 </FormControl>
                 <FormMessage>
-                  {!!(errors && errors.password) && (
-                    <span>{errors.password.msg}</span>
+                  {!!error && (
+                    <span>{error}</span>
                   )}
                 </FormMessage>
               </FormItem>
@@ -129,8 +100,8 @@ function SignUpForm() {
           <div className="w-full flex items-center justify-between">
             <Button className="bg-orange-500 text-white">Register</Button>
             <span className="text-sm text-gray-400">
-              Already have an account?
-              <Link to={'/sign-in'} className=" text-orange-400 ml-1">Sign in</Link>
+              Don't have an account?
+              <Link to={'/sign-up'} className=" text-orange-400 ml-1">Sign up</Link>
             </span>
           </div>
         </form>
@@ -140,4 +111,4 @@ function SignUpForm() {
   );
 }
 
-export default SignUpForm;
+export default SignInForm;
