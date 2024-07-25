@@ -11,8 +11,13 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function SignUpForm() {
+  const [errors,setErrors] = useState(null);
+  let navigate = useNavigate();
   const form = useForm({
     defaultValues: {
       username: "",
@@ -22,6 +27,18 @@ function SignUpForm() {
   });
   const onSubmit = async (data) => {
     console.log(data);
+    try {
+        let res = await axios.post('http://localhost:8000/api/users/register',data,{
+            withCredentials : true
+        })
+        console.log(res);
+        if(res.status == 200) {
+          navigate('/')
+        }
+      } catch (error) {
+        console.log("Error submitting the form", error);
+        setErrors(error.response.data.errors)
+      }
   };
 
   return (
@@ -40,6 +57,7 @@ function SignUpForm() {
                 <FormControl>
                   <Input
                     placeholder="Username"
+                    autoComplete="username"
                     className="w-full"
                     {...field}
                     {...form.register("username", {
@@ -47,7 +65,11 @@ function SignUpForm() {
                     })}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {!!(errors && errors.username) && (
+                    <span>{errors.username.msg}</span>
+                  )}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -67,7 +89,11 @@ function SignUpForm() {
                     })}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {!!(errors && errors.email) && (
+                    <span>{errors.email.msg}</span>
+                  )}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -79,6 +105,8 @@ function SignUpForm() {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
+                    type="password"
+                    autoComplete="current-password"
                     placeholder="*********"
                     className="w-full"
                     {...field}
@@ -87,7 +115,11 @@ function SignUpForm() {
                     })}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {!!(errors && errors.password) && (
+                    <span>{errors.password.msg}</span>
+                  )}
+                </FormMessage>
               </FormItem>
             )}
           />

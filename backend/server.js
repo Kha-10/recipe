@@ -18,7 +18,10 @@ const cookieParser = require('cookie-parser')
 
 const app = express ()
 
-app.use(cors())
+app.use(cors({
+    origin : 'http://localhost:5173',
+    credentials : true
+}))
 
 const mongoURL = 'mongodb+srv://kha:test1234@mern-claster.75d8eo2.mongodb.net/?retryWrites=true&w=majority&appName=mern-claster'
 

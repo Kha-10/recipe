@@ -14,6 +14,9 @@ function Navbar() {
             <li>
                 <a href="/contact">Contact</a>
             </li>
+            <li>
+                <a href="/sign-up">Sign up</a>
+            </li>
         </ul>
     </nav>
   )
