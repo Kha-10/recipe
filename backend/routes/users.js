@@ -9,6 +9,8 @@ const User = require("../models/User");
 
 router.post("/login", UsersController.login);
 
+router.post("/logout", UsersController.logout);
+
 router.post(
   "/register",
   [
