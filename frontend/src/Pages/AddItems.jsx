@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import axios from "axios";
+import axios from "../helper/axios";
 
 function AddItems() {
   const [itemData, setItemData] = useState(null);
@@ -42,9 +42,9 @@ function AddItems() {
     try {
       let res;
       if(id) {
-        res = await axios.patch("http://localhost:8000/api/recipes/"+id,data)
+        res = await axios.patch("/api/recipes/"+id,data)
       }else {
-        res = await axios.post("http://localhost:8000/api/recipes/",data)
+        res = await axios.post("/api/recipes/",data)
       }
       if(res.status == 200) {
         navigate('/')
@@ -57,8 +57,8 @@ function AddItems() {
   useEffect(() => {
     const getMenu = async () => {
       if (id) {
-        const url = "http://localhost:8000/api/recipes/" + id;
-        const res = await axios.get(url);
+        const url = "/api/recipes/" + id;
+        const res = await axios(url);
         console.log(res.data);
         if (res.status == 200) {
           form.setValue('title',res.data.title);
@@ -72,7 +72,7 @@ function AddItems() {
 
   useEffect(() => {
     const getCategories = async () => {
-      const url = "http://localhost:8000/api/categories";
+      const url = "/api/categories";
       const res = await axios.get(url);
       if (res.status == 200) {
         setCategories(res.data);

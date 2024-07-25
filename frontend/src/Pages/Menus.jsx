@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../helper/axios";
 import Categoty from "@/components/Categoty";
 import AllItems from "@/components/AllItems";
 
@@ -9,7 +9,7 @@ function Menus() {
 
   const getRecipes = async () => {
     try {
-      let url = "http://localhost:8000/api/recipes";
+      let url = "/api/recipes";
 
       const res = await axios.get(url);
       if (res.status === 200) {
@@ -23,8 +23,8 @@ function Menus() {
 
   let getMenusBycategory = async (id) => {
     try {
-      let url = "http://localhost:8000/api/recipes/" + id;
-      const res = await axios.get(url);
+      let url = "/api/recipes/" + id;
+      const res = await axios(url);
 
       if (res.status === 200) {
         setMenus(res.data);
@@ -42,7 +42,7 @@ function Menus() {
 
   const deleteHandler = async (id) => {
     try {
-      const res = await axios.delete("http://localhost:8000/api/recipes/" + id);
+      const res = await axios.delete("/api/recipes/" + id);
       if (res.status == 200) {
         setMenus((prev) => prev.filter((p) => p._id !== id));
         setRecipes((prev) => prev.filter((p) => p._id !== id));

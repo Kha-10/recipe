@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
+import axios from "../helper/axios";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -28,7 +28,7 @@ function SignInForm() {
     try {
       setError(null);
       let res = await axios.post(
-        "http://localhost:8000/api/users/login",
+        "/api/users/login",
         data,
         {
           withCredentials: true,

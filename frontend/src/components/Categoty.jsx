@@ -26,7 +26,7 @@ import {
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
+import axios from "../helper/axios";
 
 function Categoty({recipes,getMenusBycategory}) {
   const [isOpened, setIsOpened] = useState(false);
@@ -45,12 +45,12 @@ function Categoty({recipes,getMenusBycategory}) {
       let res;
       if (id) {
         setCategoryId(id);
-        res = await axios.get("http://localhost:8000/api/categories/" + id);
+        res = await axios("/api/categories/" + id);
         if (res.status == 200) {
           form.setValue("title", res.data.title);
         }
       } else {
-        res = await axios.get("http://localhost:8000/api/categories/");
+        res = await axios("/api/categories/");
         if (res.status == 200) {
           setCategories(res.data);
         }
@@ -69,11 +69,11 @@ function Categoty({recipes,getMenusBycategory}) {
       let res;
       if (categoryId) {
         res = await axios.patch(
-          "http://localhost:8000/api/categories/" + categoryId,
+          "/api/categories/" + categoryId,
           data
         );
       } else {
-        res = await axios.post("http://localhost:8000/api/categories", data);
+        res = await axios.post("/api/categories", data);
       }
       if (res.status === 200) {
         closeDialog();
@@ -97,7 +97,7 @@ function Categoty({recipes,getMenusBycategory}) {
   const deleteCategoryHandler = async (id) => {
     try {
       const res = await axios.delete(
-        "http://localhost:8000/api/categories/" + id
+        "/api/categories/" + id
       );
       if (res.status == 200) {
         setCategories((prev) => prev.filter((p) => p._id !== id));

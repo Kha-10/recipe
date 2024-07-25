@@ -16,6 +16,8 @@ const cors = require ('cors')
 
 const cookieParser = require('cookie-parser')
 
+const authMiddleware = require('./middlewares/authMiddleware')
+
 const app = express ()
 
 app.use(cors({
@@ -45,9 +47,9 @@ app.get('/',(req,res)=> {
     res.json({hello : 'world'})
 })
 
-app.use('/api/recipes',recipieRoutes)
+app.use('/api/recipes',authMiddleware,recipieRoutes)
 
-app.use('/api/categories',categoryRoutes)
+app.use('/api/categories',authMiddleware,categoryRoutes)
 
 app.use('/api/users',userRoutes)
 
