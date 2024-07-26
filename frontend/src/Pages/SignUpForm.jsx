@@ -13,11 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "../helper/axios";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
-
+import { useContext, useState } from "react";
+import { AuthContext } from "@/contexts/authContext";
 function SignUpForm() {
   const [errors, setErrors] = useState(null);
   let navigate = useNavigate();
+
+  const {dispatch} = useContext(AuthContext)
+
   const form = useForm({
     defaultValues: {
       username: "",
@@ -25,6 +28,7 @@ function SignUpForm() {
       password: "",
     },
   });
+
   const onSubmit = async (data) => {
     try {
       setErrors(null);
@@ -36,6 +40,7 @@ function SignUpForm() {
         }
       );
       if (res.status == 200) {
+        dispatch({type :'REGISTER',payload : res.data.user})
         navigate("/");
       }
     } catch (error) {

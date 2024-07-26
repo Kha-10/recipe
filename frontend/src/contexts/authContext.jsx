@@ -11,6 +11,9 @@ const AuthContextProvider = ({ children }) => {
       case "LOGOUT":
         localStorage.removeItem("user");
         return { user: null };
+        case "REGISTER":
+        localStorage.setItem("user",JSON.stringify(action.payload));
+        return { user: action.payload };
       default:
         return state;
     }
@@ -32,7 +35,7 @@ const AuthContextProvider = ({ children }) => {
       dispatch({ type: "LOGOUT" });
     }
   }, []);
-  
+
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>
       {children}
