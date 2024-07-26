@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "../helper/axios";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "@/contexts/authContext";
 
 function SignInForm() {
   const [error, setError] = useState(null);
@@ -24,6 +25,7 @@ function SignInForm() {
       password: "",
     },
   });
+  const {dispatch} = useContext(AuthContext)
   const onSubmit = async (data) => {
     try {
       setError(null);
@@ -36,6 +38,7 @@ function SignInForm() {
       );
       console.log(res);
       if (res.status == 200) {
+        dispatch({type : 'LOGIN',payload : res.data.user})
         navigate("/");
       }
     } catch (error) {

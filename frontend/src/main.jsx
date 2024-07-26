@@ -16,6 +16,7 @@ import OrderSettings from './Pages/OrderSettings.jsx';
 import AddItems from './Pages/AddItems.jsx';
 import SignUpForm from './Pages/SignUpForm.jsx';
 import SignInForm from './Pages/SignInForm.jsx';
+import { AuthContextProvider } from './contexts/authContext.jsx';
 
 const router = createBrowserRouter([
   {
@@ -72,6 +73,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthContextProvider>
+      <RouterProvider router={router} />
+    </AuthContextProvider>
   </React.StrictMode>,
 )
