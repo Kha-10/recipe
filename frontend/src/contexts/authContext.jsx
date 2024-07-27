@@ -7,13 +7,13 @@ const AuthContextProvider = ({ children }) => {
   const AuthReducer = (state, action) => {
     switch (action.type) {
       case "LOGIN":
-        localStorage.setItem("user", JSON.stringify(action.payload));
+        // localStorage.setItem("user", JSON.stringify(action.payload));
         return { user: action.payload };
       case "LOGOUT":
-        localStorage.removeItem("user");
+        // localStorage.removeItem("user");
         return { user: null };
         case "REGISTER":
-        localStorage.setItem("user",JSON.stringify(action.payload));
+        // localStorage.setItem("user",JSON.stringify(action.payload));
         return { user: action.payload };
       default:
         return state;

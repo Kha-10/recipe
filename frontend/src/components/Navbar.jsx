@@ -6,8 +6,7 @@ import { useContext } from "react";
 function Navbar() {
   const navigate = useNavigate();
   const { user, dispatch } = useContext(AuthContext);
-  console.log(user);
-
+  
   const logoutHandler = async () => {
     const res = await axios.post("/api/users/logout");
     if (res.status == 200) {
