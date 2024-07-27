@@ -1,5 +1,7 @@
 const Recipe = require("../models/Recipe");
 const mongoose = require("mongoose");
+const fs = require('fs').promises
+const removeFile = require('../helpers/removeFile')
 
 const RecipesController = {
   index: async (req, res) => {
@@ -8,29 +10,29 @@ const RecipesController = {
       const page = req.query.page || 1;
       const recipe = await Recipe.find()
         .populate("category")
-        .skip((page -1)*limit)
+        .skip((page - 1) * limit)
         .limit(limit)
         .sort({ createdAt: -1 });
 
-        let totalPages = await Recipe.countDocuments();
-        let totalPagesCount = Math.ceil(totalPages/limit)
+      let totalPages = await Recipe.countDocuments();
+      let totalPagesCount = Math.ceil(totalPages / limit);
 
-        let pagination = {
-            isNextPage : totalPagesCount == page ? false : true,
-            isPreviousPage : page == 1 ? false : true,
-            currentPage :page,
-            links :[]
-          }
+      let pagination = {
+        isNextPage: totalPagesCount == page ? false : true,
+        isPreviousPage: page == 1 ? false : true,
+        currentPage: page,
+        links: [],
+      };
 
-        for (let index = 0; index < totalPagesCount; index++) {
-            let number = index+1
-            pagination.links.push({number})
-        }
+      for (let index = 0; index < totalPagesCount; index++) {
+        let number = index + 1;
+        pagination.links.push({ number });
+      }
 
-        let response = {
-            data :recipe,
-            pagination
-        }
+      let response = {
+        data: recipe,
+        pagination,
+      };
       return res.json(response);
     } catch (error) {
       return res.status(500).json({ msg: "Internrt Server Error" });
@@ -76,6 +78,10 @@ const RecipesController = {
         return res.status(400).json({ msg: "Invalid id" });
       }
       let recipe = await Recipe.findByIdAndDelete(id);
+
+      let path = __dirname+'/../public'+recipe.photo;
+      await removeFile(path)
+      
       if (!recipe) {
         return res.status(404).json({ msg: "recipe not found" });
       }
@@ -93,10 +99,31 @@ const RecipesController = {
       let recipe = await Recipe.findByIdAndUpdate(id, {
         ...req.body,
       });
+
+      let path = __dirname+'/../public'+recipe.photo;
+      await removeFile(path)
+
       if (!recipe) {
         return res.status(404).json({ msg: "recipe not found" });
       }
       return res.json(recipe);
+    } catch (error) {
+      return res.status(500).json({ msg: "Internrt Server Error" });
+    }
+  },
+  upload: async (req, res) => {
+    try {
+        let id = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+          return res.status(400).json({ msg: "Invalid id" });
+        }
+        let recipe = await Recipe.findByIdAndUpdate(id, {
+          photo : '/' + req.file.filename
+        });
+        if (!recipe) {
+          return res.status(404).json({ msg: "recipe not found" });
+        }
+        return res.json(recipe);
     } catch (error) {
       return res.status(500).json({ msg: "Internrt Server Error" });
     }

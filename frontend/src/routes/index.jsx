@@ -15,7 +15,7 @@ import { AuthContext } from "@/contexts/authContext.jsx";
 
 function index() {
   const {user} = useContext(AuthContext);
-  console.log(user);
+
   const router = createBrowserRouter([
     {
       path: "/",

@@ -36,7 +36,7 @@ function OrderSettings() {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto ml-[300px] z-50">
+    <div className="max-w-screen-lg mx-auto z-50">
       <label htmlFor="switchInput">Switch Input Type:</label>
       <input
         id="switchInput"

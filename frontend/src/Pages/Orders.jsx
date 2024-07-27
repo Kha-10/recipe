@@ -11,7 +11,7 @@ import {
 function Orders() {
   return (
     <Dialog>
-  <DialogTrigger className="max-w-screen-lg mx-auto ml-[300px] z-50">Open</DialogTrigger>
+  <DialogTrigger className="max-w-screen-lg mx-auto z-50">Open</DialogTrigger>
   <DialogContent>
     <DialogHeader>
       <DialogTitle>Are you absolutely sure?</DialogTitle>

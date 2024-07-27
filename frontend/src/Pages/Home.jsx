@@ -9,29 +9,31 @@ function Home() {
   const [pagination, setPagination] = useState(null);
   const location = useLocation();
   const searchQuery = new URLSearchParams(location.search);
-  const page = parseInt(searchQuery.get('page')) ? parseInt(searchQuery.get('page')) : 1;
-  
+  const page = parseInt(searchQuery.get("page"))
+    ? parseInt(searchQuery.get("page"))
+    : 1;
 
   useEffect(() => {
     const fetchRecipes = async () => {
-      const response = await axios("/api/recipes?page="+page);
+      const response = await axios("/api/recipes?page=" + page);
       console.log(response.data.data);
       setRecipes(response.data.data);
-      setPagination(response.data.pagination)
-      window.scroll({top :0,left:0,behavior:"smooth"})
+      setPagination(response.data.pagination);
+      window.scroll({ top: 0, left: 0, behavior: "smooth" });
     };
     fetchRecipes();
   }, [page]);
 
-
   return (
-    <div className="space-y-3 max-w-screen-sm mx-auto p-3">
-      {!!recipes.length &&
-        recipes.map((recipe) => (
-          <RecipeCard recipe={recipe} key={recipe._id} />
-        ))}
-      {!!pagination && <Pagination pagination={pagination} page={page || 1}/>}
-    </div>
+    <>
+      <div className="max-w-screen-lg mx-auto flex items-center flex-wrap gap-3">
+        {!!recipes.length &&
+          recipes.map((recipe) => (
+            <RecipeCard recipe={recipe} key={recipe._id} />
+          ))}
+      </div>
+      {!!pagination && <Pagination pagination={pagination} page={page || 1} />}
+    </>
   );
 }
 

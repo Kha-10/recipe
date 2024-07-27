@@ -48,7 +48,7 @@ function SignInForm() {
   };
 
   return (
-    <div className="space-y-3 max-w-[400px] mx-auto ml-[300px]">
+    <div className="space-y-3 max-w-[400px] mx-auto">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

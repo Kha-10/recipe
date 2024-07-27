@@ -22,10 +22,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label"
 import axios from "../helper/axios";
 
 function AddItems() {
   const [itemData, setItemData] = useState(null);
+  const [files,setFiles] = useState(null)
+  const [preview,setPreview] = useState(null)
   const [categories, setCategories] = useState([]);
   const form = useForm({
     defaultValues: {
@@ -41,13 +44,23 @@ function AddItems() {
   const onSubmit = async (data) => {
     try {
       let res;
-      if(id) {
-        res = await axios.patch("/api/recipes/"+id,data)
-      }else {
-        res = await axios.post("/api/recipes/",data)
+      if (id) {
+        res = await axios.patch("/api/recipes/" + id, data);
+      } else {
+        res = await axios.post("/api/recipes/", data);
       }
-      if(res.status == 200) {
-        navigate('/')
+      let formData = new FormData;
+      formData.set('photo',files)
+      let uploadRes = await axios.post(`/api/recipes/${res.data._id}/upload`,
+      formData,{
+        headers :{
+          Accept : 'multipart/form-data'
+        }
+      })
+      console.log(uploadRes);
+
+      if (res.status == 200) {
+        navigate("/");
       }
     } catch (error) {
       console.log("Error submitting the form", error);
@@ -61,9 +74,10 @@ function AddItems() {
         const res = await axios(url);
         console.log(res.data);
         if (res.status == 200) {
-          form.setValue('title',res.data.title);
-          form.setValue('price',res.data.price);
-          form.setValue('category',res.data.category?._id);
+          setPreview(import.meta.env.VITE_URL+res.data.photo)
+          form.setValue("title", res.data.title);
+          form.setValue("price", res.data.price);
+          form.setValue("category", res.data.category?._id);
         }
       }
     };
@@ -81,14 +95,30 @@ function AddItems() {
     getCategories();
   }, []);
 
+  const addPhoto = (e) => {
+    let file = e.target.files[0]
+    setFiles(file)
+
+    let fileReader = new FileReader;
+    fileReader.onload = (e) => {
+      setPreview(e.target.result);
+    }
+    fileReader.readAsDataURL(file)
+  }
+
   return (
-    <div className="space-y-3 max-w-screen-sm mx-auto ml-[300px]">
-      <h1 className="text-xl font-semibold">{id ? 'Edit item' : 'Add item'}</h1>
+    <div className="space-y-3 max-w-screen-sm mx-auto">
+      <h1 className="text-xl font-semibold">{id ? "Edit item" : "Add item"}</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-5 bg-white p-5 rounded-lg shadow-sm border border-slate-200"
         >
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="picture">Add photo</Label>
+            <Input id="picture" type="file" onChange={addPhoto}/>
+          </div>
+          {preview && <img className="max-w-[30%]" src={preview} alt="" />}
           <FormField
             control={form.control}
             name="title"
@@ -137,13 +167,10 @@ function AddItems() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl className="w-[70%]">
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a category"/>
+                      <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -165,7 +192,9 @@ function AddItems() {
               </FormItem>
             )}
           />
-          <Button className="bg-orange-500 text-white">{id ? "Update" :"Submit"}</Button>
+          <Button className="bg-orange-500 text-white">
+            {id ? "Update" : "Submit"}
+          </Button>
         </form>
       </Form>
       <DevTool control={form.control} />

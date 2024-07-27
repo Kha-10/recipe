@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function Pagination({pagination,page}) {
   return (
-    <div className="flex rounded-2xl items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+    <div className="max-w-screen-lg mx-auto flex mt-3 rounded-2xl items-center justify-end border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <nav
