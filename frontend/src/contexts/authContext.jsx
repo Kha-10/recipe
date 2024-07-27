@@ -1,3 +1,4 @@
+import axios from "../helper/axios";
 import { createContext, useEffect, useReducer } from "react";
 
 const AuthContext = createContext();
@@ -25,12 +26,14 @@ const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     try {
-      const isUserExisted = JSON.parse(localStorage.getItem("user"));
-      if (isUserExisted) {
-        dispatch({ type: "LOGIN", payload: isUserExisted });
-      } else {
-        dispatch({ type: "LOGOUT" });
-      }
+      axios('/api/users/me').then(res => {
+        let isUserExisted = res.data
+        if (isUserExisted) {
+            dispatch({ type: "LOGIN", payload: isUserExisted });
+          } else {
+            dispatch({ type: "LOGOUT" });
+          }
+      })
     } catch (error) {
       dispatch({ type: "LOGOUT" });
     }

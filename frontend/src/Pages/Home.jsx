@@ -16,7 +16,6 @@ function Home() {
   useEffect(() => {
     const fetchRecipes = async () => {
       const response = await axios("/api/recipes?page=" + page);
-      console.log(response.data.data);
       setRecipes(response.data.data);
       setPagination(response.data.pagination);
       window.scroll({ top: 0, left: 0, behavior: "smooth" });

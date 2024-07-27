@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
 const authMiddleware = (req,res,next) => {
     const token = req.cookies.jwt;
@@ -7,7 +8,10 @@ const authMiddleware = (req,res,next) => {
             if(err) {
                 return res.status(401).json({msg : 'unaunthanticated'})
             } else {
-                next()
+                User.findById(decodedValue._id).then(user => {
+                    req.user = user
+                    next()
+                })
             }
         })
     }else {

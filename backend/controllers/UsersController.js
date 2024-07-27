@@ -2,6 +2,9 @@ const User = require("../models/User");
 const createToken = require("../helpers/createJwt")
 
 const UsersController = {
+  me : async (req,res) => {
+    return res.json(req.user)
+  },
   register: async (req, res) => {
     try {
       const { username, email, password } = req.body;

@@ -1,11 +1,14 @@
 const express = require("express");
 const { body } = require("express-validator");
 const handleErrorMessage = require("../middlewares/handleErrorMessage");
+const AuthMiddleware = require("../middlewares/authMiddleware")
 
 const router = express.Router();
 
 const UsersController = require("../controllers/UsersController");
 const User = require("../models/User");
+
+router.get("/me",AuthMiddleware, UsersController.me);
 
 router.post("/login", UsersController.login);
 
