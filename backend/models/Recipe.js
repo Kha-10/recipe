@@ -18,6 +18,9 @@ const RecipeSchema = new schema ({
         type : schema.Types.ObjectId,
         ref : 'Category',
         required : true,
+    },
+    imgUrl : {
+        type : String,
     }
 },{timestamps : true});
 

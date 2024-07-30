@@ -1,7 +1,7 @@
 function RecipeCard({recipe}) {
   return (
     <div className=" bg-white p-5 rounded-2xl space-y-3 min-w-[333px] min-h-[200px]">
-        <img className="h-24" src={import.meta.env.VITE_URL+recipe.photo} alt="" />
+        <img className="h-24 object-cover" src={recipe.imgUrl} alt="" />
         <h3 className="text-xl font-bold">{recipe.title}</h3>
         <p>{recipe.description}</p>
         <div className="space-x-1">

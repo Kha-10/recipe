@@ -16,9 +16,34 @@ const cors = require ('cors')
 
 const cookieParser = require('cookie-parser')
 
+const { S3Client } = require('@aws-sdk/client-s3')
+const multer = require('multer')
+const multerS3 = require('multer-s3')
+
 const authMiddleware = require('./middlewares/authMiddleware')
 
 const app = express ()
+
+const s3 = new S3Client({
+    region: process.env.BUCKET_REGION,
+    credentials: {
+      accessKeyId: process.env.ACCESS_KEY,
+      secretAccessKey: process.env.SECRET_KEY,
+    },
+  })
+
+const upload = multer({
+    storage: multerS3({
+      s3: s3,
+      bucket: process.env.BUCKET_NAME,
+      metadata: function (req, file, cb) {
+        cb(null, {fieldName: file.fieldname});
+      },
+      key: function (req, file, cb) {
+        cb(null, Date.now().toString()+'-'+file.originalname)
+      }
+    })
+  })
 
 app.use(express.static('public'))
 
@@ -64,3 +89,8 @@ app.get('/get-cookie',(req,res)=> {
     let cookies = req.cookies
     return res.send(cookies)
 })
+
+app.post('/upload', upload.single('photo'), function(req, res, next) {
+    console.log(req.file);
+    return res.status(200).send(req.file);
+  })

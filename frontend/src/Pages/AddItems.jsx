@@ -22,13 +22,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui/label";
 import axios from "../helper/axios";
 
 function AddItems() {
-  const [itemData, setItemData] = useState(null);
-  const [files,setFiles] = useState(null)
-  const [preview,setPreview] = useState(null)
+  const [itemData, setItemData] = useState('');
+  const [files, setFiles] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [categories, setCategories] = useState([]);
   const form = useForm({
     defaultValues: {
@@ -45,36 +45,52 @@ function AddItems() {
     try {
       let res;
       if (id) {
+        if(!files) {
+          data.imgUrl = itemData
+        }
         res = await axios.patch("/api/recipes/" + id, data);
       } else {
         res = await axios.post("/api/recipes/", data);
       }
-      let formData = new FormData;
-      formData.set('photo',files)
-      let uploadRes = await axios.post(`/api/recipes/${res.data._id}/upload`,
-      formData,{
-        headers :{
-          Accept : 'multipart/form-data'
-        }
-      })
-      console.log(uploadRes);
+      let formData = new FormData();
+      formData.set("photo", files);
 
+      let uploadRes;
+      if(files) {
+        uploadRes = await axios.post(
+          `/api/recipes/${res.data._id}/upload`,
+          formData,
+          {
+            headers: {
+              Accept: "multipart/form-data",
+            },
+          }
+        ); 
+      }
+      // else {
+      //   uploadRes = await axios.post(
+      //     `/api/recipes/${res.data._id}/upload`,res.data.photo); 
+      // }
+      console.log('uploadRes',uploadRes); 
       if (res.status == 200) {
         navigate("/");
       }
+
     } catch (error) {
       console.log("Error submitting the form", error);
     }
   };
+
+  console.log(itemData);
 
   useEffect(() => {
     const getMenu = async () => {
       if (id) {
         const url = "/api/recipes/" + id;
         const res = await axios(url);
-        console.log(res.data);
         if (res.status == 200) {
-          setPreview(import.meta.env.VITE_URL+res.data.photo)
+          setPreview(import.meta.env.VITE_AWS_URL + "/" + res.data.photo);
+          setItemData(res.data.photo)
           form.setValue("title", res.data.title);
           form.setValue("price", res.data.price);
           form.setValue("category", res.data.category?._id);
@@ -83,6 +99,7 @@ function AddItems() {
     };
     getMenu();
   }, [id]);
+
 
   useEffect(() => {
     const getCategories = async () => {
@@ -96,15 +113,15 @@ function AddItems() {
   }, []);
 
   const addPhoto = (e) => {
-    let file = e.target.files[0]
-    setFiles(file)
-
-    let fileReader = new FileReader;
+    let file = e.target.files[0];
+    setFiles(file);
+    
+    let fileReader = new FileReader();
     fileReader.onload = (e) => {
       setPreview(e.target.result);
-    }
-    fileReader.readAsDataURL(file)
-  }
+    };
+    fileReader.readAsDataURL(file);
+  };
 
   return (
     <div className="space-y-3 max-w-screen-sm mx-auto">
@@ -116,7 +133,7 @@ function AddItems() {
         >
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="picture">Add photo</Label>
-            <Input id="picture" type="file" onChange={addPhoto}/>
+            <Input id="picture" name="picture" type="file" onChange={addPhoto}/>
           </div>
           {preview && <img className="max-w-[30%]" src={preview} alt="" />}
           <FormField

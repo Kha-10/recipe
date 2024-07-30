@@ -23,6 +23,7 @@ function Home() {
     fetchRecipes();
   }, [page]);
 
+
   return (
     <>
       <div className="max-w-screen-lg mx-auto flex items-center flex-wrap gap-3">
