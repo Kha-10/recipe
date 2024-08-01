@@ -21,6 +21,7 @@ const multer = require('multer')
 const multerS3 = require('multer-s3')
 
 const authMiddleware = require('./middlewares/authMiddleware')
+const sendEmail = require('./helpers/sendEmail')
 
 const app = express ()
 
@@ -70,8 +71,12 @@ app.use(morgan('dev'))
 
 app.use(cookieParser())
 
+app.set('views','./views');
+app.set('view engine','ejs');
+
 app.get('/',(req,res)=> {
-    res.json({hello : 'world'})
+    return res.json({hello : 'world'})
+    // return res.render('email')
 })
 
 app.use('/api/recipes',authMiddleware,recipieRoutes)
@@ -88,6 +93,22 @@ app.get('/cookie',(req,res)=> {
 app.get('/get-cookie',(req,res)=> {
     let cookies = req.cookies
     return res.send(cookies)
+})
+
+app.get('/send-email',async(req,res)=> {
+      try {
+        await sendEmail({
+            viewFilename : 'email',
+            data : {
+                name : 'KHA'
+            },
+            from : 'Emerald@gmail.com',
+            to : 'kha@gmail.com'
+          })
+        return res.status(200).send('email sent')
+      } catch (error) {
+        return res.status(500).json({msg : error.message})
+      }
 })
 
 app.post('/upload', upload.single('photo'), function(req, res, next) {
