@@ -7,7 +7,9 @@ const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const User = require("../models/User");
 
-const sendEmail = require('../helpers/sendEmail')
+const sendEmail = require("../helpers/sendEmail");
+
+const Queue = require("bull");
 
 const s3 = new S3Client({
   region: process.env.BUCKET_REGION,
@@ -15,6 +17,14 @@ const s3 = new S3Client({
     accessKeyId: process.env.ACCESS_KEY,
     secretAccessKey: process.env.SECRET_KEY,
   },
+});
+
+const emailQueue = new Queue("emailQueue", {
+  redis: { port: 6379, host: "127.0.0.1" },
+});
+
+emailQueue.process( async function (job, done) {
+    await sendEmail(job.data)
 });
 
 const RecipesController = {
@@ -69,17 +79,19 @@ const RecipesController = {
       const recipe = await Recipe.create({
         title,
         price,
-        category
+        category,
       });
 
-      let users = await User.find(null,['email'])
-      let usersEmails = users.map(user => user.email);
-      let filteredUsers = usersEmails.filter(email => email !== req.user.email)
-      await sendEmail({
+      let users = await User.find(null, ["email"]);
+      let usersEmails = users.map((user) => user.email);
+      let filteredUsers = usersEmails.filter(
+        (email) => email !== req.user.email
+      );
+      emailQueue.add({
         viewFilename: "email",
         data: {
           name: req.user.username,
-          recipe
+          recipe,
         },
         from: req.user.email,
         to: filteredUsers,
