@@ -43,7 +43,7 @@ function SignInForm() {
       }
     } catch (error) {
       console.log("Error submitting the form", error);
-      setError(error.response.data.error);
+      setError(error.response.data?.error);
     }
   };
 
