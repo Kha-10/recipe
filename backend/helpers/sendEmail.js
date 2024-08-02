@@ -4,11 +4,11 @@ const ejs = require('ejs');
 
 const sendEmail = async ({viewFilename,data,from,to}) => {
     const transport = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 2525,
+        host: process.env.CUSTOM_HOST,
+        port: process.env.CUSTOM_PORT,
         auth: {
-          user: "0ee01281a0f632",
-          pass: "af3dbb8ae192cd"
+          user: process.env.CUSTOM_USER,
+          pass: process.env.CUSTOM_PASS
         }
       });
 
