@@ -87,6 +87,7 @@ const RecipesController = {
       let filteredUsers = usersEmails.filter(
         (email) => email !== req.user.email
       );
+
       emailQueue.add({
         viewFilename: "email",
         data: {
@@ -184,7 +185,6 @@ const RecipesController = {
   },
   upload: async (req, res) => {
     try {
-      console.log("req", req);
       let id = req.params.id;
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ msg: "Invalid id" });

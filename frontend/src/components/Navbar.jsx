@@ -46,7 +46,7 @@ function Navbar() {
       navigate("/sign-in");
     }
   };
-  
+
   return (
     <nav className="w-full flex items-center justify-between p-5 bg-slate-50 border border-b fixed top-0 left-0 right-0 z-10">
       <div className="text-xl font-semibold">Story Appetizers</div>
@@ -85,8 +85,8 @@ function Navbar() {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem>
-                  <Users className="mr-2 h-4 w-4" />
-                  <span>Team</span>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

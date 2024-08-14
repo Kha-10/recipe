@@ -21,7 +21,7 @@ const sendEmail = async ({viewFilename,data,from,to}) => {
                 text: "Hello world?", // plain text body
                 html: dataString, // html body
               });
-            console.log("Message sent: %s", info.messageId);
+            console.log("Message sent: %s", dataString);
       } catch (error) {
         throw new Error(error)
       }
