@@ -1,9 +1,7 @@
 const {
   S3Client,
-  GetObjectCommand,
   DeleteObjectCommand,
 } = require("@aws-sdk/client-s3");
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const s3 = new S3Client({
   region: process.env.BUCKET_REGION,
@@ -14,7 +12,8 @@ const s3 = new S3Client({
 });
 
 const awsRemove = async (img) => {
-    const params = {
+    try {
+      const params = {
         Bucket: process.env.BUCKET_NAME,
         Key: img.photo,
       };
@@ -25,6 +24,11 @@ const awsRemove = async (img) => {
       const response = await s3.send(command);
       
       console.log("Delete Response:", response);
-}
+      return response;  // Ensure the response is returned
+    } catch (error) {
+    //   console.error("Error deleting object:", error);
+    throw new Error(error)
+    }
+  }
 
 module.exports = awsRemove 
