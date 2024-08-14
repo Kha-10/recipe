@@ -27,7 +27,7 @@ function Home() {
 
   return (
     <>
-      <div className="max-w-screen-lg mx-auto flex items-center flex-wrap gap-3">
+      <div className="max-w-screen-lg mx-auto flex items-center flex-wrap gap-3 mt-3">
         {!!recipes.length &&
           recipes.map((recipe) => (
             <RecipeCard recipe={recipe} key={recipe._id} />
