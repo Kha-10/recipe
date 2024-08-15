@@ -21,7 +21,13 @@ const RecipeSchema = new schema ({
     },
     imgUrl : {
         type : String,
-    }
+    },
+    startDate: {
+        type: Date,
+      },
+      endDate: {
+        type: Date,
+      },
 },{timestamps : true});
 
 module.exports = mongoose.model ("Recipe",RecipeSchema)

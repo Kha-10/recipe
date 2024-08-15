@@ -23,8 +23,19 @@ const emailQueue = new Queue("emailQueue", {
   redis: { port: 6379, host: "127.0.0.1" },
 });
 
-emailQueue.process( async function (job, done) {
-    await sendEmail(job.data)
+// emailQueue.process( async function (job, done) {
+//     await sendEmail(job.data)
+// });
+
+emailQueue.process(async function (job, done) {
+  try {
+    console.log("Processing email job:", job.id);
+    await sendEmail(job.data);
+    done();
+  } catch (error) {
+    console.error("Error processing email job:", job.id, error);
+    done(error); // Report the error to the queue
+  }
 });
 
 const RecipesController = {
@@ -39,14 +50,23 @@ const RecipesController = {
         .sort({ createdAt: -1 });
 
       for (const recipe of recipes) {
-        const getObjectParams = {
-          Bucket: process.env.BUCKET_NAME,
-          Key: recipe.photo,
-        };
+        if (recipe.photo) {
+          const getObjectParams = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: recipe.photo,
+          };
+          const command = new GetObjectCommand(getObjectParams);
+          const url = await getSignedUrl(s3, command, { expiresIn: 60 });
+          recipe.imgUrl = url;
+        }
+        // const getObjectParams = {
+        //   Bucket: process.env.BUCKET_NAME,
+        //   Key: recipe.photo,
+        // };
 
-        const command = new GetObjectCommand(getObjectParams);
-        const url = await getSignedUrl(s3, command, { expiresIn: 60 });
-        recipe.imgUrl = url;
+        // const command = new GetObjectCommand(getObjectParams);
+        // const url = await getSignedUrl(s3, command, { expiresIn: 60 });
+        // recipe.imgUrl = url;
       }
 
       let totalPages = await Recipe.countDocuments();
@@ -87,8 +107,9 @@ const RecipesController = {
       let filteredUsers = usersEmails.filter(
         (email) => email !== req.user.email
       );
-
-      emailQueue.add({
+      //   console.log("Filtered Users:", filteredUsers);
+      //   console.log("Recipe Data:", recipe);
+      await emailQueue.add({
         viewFilename: "email",
         data: {
           name: req.user.username,
@@ -171,6 +192,7 @@ const RecipesController = {
       if (!recipe.photo) {
         return res.status(404).json({ msg: "Photo not found" });
       }
+      
       if (!req.body.imgUrl && recipe.photo) {
         await awsRemove(recipe);
       }
