@@ -95,12 +95,21 @@ const RecipesController = {
   },
   store: async (req, res) => {
     try {
-      const { title, price, category } = req.body;
-      const recipe = await Recipe.create({
+      const { title, price, category,availability,daterange} = req.body;
+      console.log('HHH',req.body);
+      const recipeData = {
         title,
         price,
         category,
-      });
+        availability,
+      };
+    
+      if (daterange) {
+        recipeData.startDate = daterange.from;
+        recipeData.endDate = daterange.to;
+      }
+
+      const recipe = await Recipe.create(recipeData);
 
       let users = await User.find(null, ["email"]);
       let usersEmails = users.map((user) => user.email);
@@ -192,7 +201,7 @@ const RecipesController = {
       if (!recipe.photo) {
         return res.status(404).json({ msg: "Photo not found" });
       }
-      
+
       if (!req.body.imgUrl && recipe.photo) {
         await awsRemove(recipe);
       }

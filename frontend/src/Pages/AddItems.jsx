@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,61 +43,71 @@ function AddItems() {
   const [categories, setCategories] = useState([]);
   const form = useForm({
     defaultValues: {
+      picture: "",
       title: "",
       price: 0,
       category: "",
       availability: false,
+      daterange: {
+        from: new Date(),
+        to: addDays(new Date(), 20),
+      },
     },
   });
 
-  const [date, setDate] = useState({
-    from: new Date(),
-    to: addDays(new Date(), 20),
-  });
+  // const [date, setDate] = useState({
+  //   from: new Date(),
+  //   to: addDays(new Date(), 20),
+  // });
+
+  const date = form.watch("daterange");
 
   const navigate = useNavigate();
 
   const { id } = useParams();
 
   const onSubmit = async (data) => {
-    let combinedData = { ...data, ...date };
+    delete data.picture
+    if (!data.availability) {
+      delete data.daterange; // Removes the daterange key from the data object
+    }
     console.log(data);
-    // try {
-    //   let res;
-    //   if (id) {
-    //     if (!files) {
-    //       data.imgUrl = itemData;
-    //     }
-    //     res = await axios.patch("/api/recipes/" + id, data);
-    //   } else {
-    //     res = await axios.post("/api/recipes/", data);
-    //   }
-    //   let formData = new FormData();
-    //   formData.set("photo", files);
+    try {
+      let res;
+      if (id) {
+        if (!files) {
+          data.imgUrl = itemData;
+        }
+        res = await axios.patch("/api/recipes/" + id, data);
+      } else {
+        res = await axios.post("/api/recipes/", data);
+      }
+      let formData = new FormData();
+      formData.set("photo", files);
 
-    //   let uploadRes;
-    //   if (files) {
-    //     uploadRes = await axios.post(
-    //       `/api/recipes/${res.data._id}/upload`,
-    //       formData,
-    //       {
-    //         headers: {
-    //           Accept: "multipart/form-data",
-    //         },
-    //       }
-    //     );
-    //   }
-    //   // else {
-    //   //   uploadRes = await axios.post(
-    //   //     `/api/recipes/${res.data._id}/upload`,res.data.photo);
-    //   // }
-    //   console.log("uploadRes", uploadRes);
-    //   if (res.status == 200) {
-    //     navigate("/");
-    //   }
-    // } catch (error) {
-    //   console.log("Error submitting the form", error);
-    // }
+      let uploadRes;
+      if (files) {
+        uploadRes = await axios.post(
+          `/api/recipes/${res.data._id}/upload`,
+          formData,
+          {
+            headers: {
+              Accept: "multipart/form-data",
+            },
+          }
+        );
+      }
+      // else {
+      //   uploadRes = await axios.post(
+      //     `/api/recipes/${res.data._id}/upload`,res.data.photo);
+      // }
+      console.log("uploadRes", uploadRes);
+      if (res.status == 200) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("Error submitting the form", error);
+    }
   };
 
   useEffect(() => {
@@ -147,7 +157,7 @@ function AddItems() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-5 bg-white p-5 rounded-lg shadow-sm border border-slate-200"
         >
-          <div className="grid w-full max-w-sm items-center gap-1.5 mb-4 space-y-1">
+          {/* <div className="grid w-full max-w-sm items-center gap-1.5 mb-4 space-y-1">
             <Label htmlFor="picture">Add photo</Label>
             <Input
               id="picture"
@@ -155,49 +165,35 @@ function AddItems() {
               type="file"
               onChange={addPhoto}
             />
-          </div>
-          {preview && <img className="max-w-[30%]" src={preview} alt="" />}
-          {/* <div className={cn("grid gap-2")}>
-            <Label htmlFor="daterange" className="mb-1">
-              Start Date - End Date
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant={"outline"}
-                  className={cn(
-                    "w-[300px] justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date?.from ? (
-                    date.to ? (
-                      <>
-                        {format(date.from, "LLL dd, y")} -{" "}
-                        {format(date.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      format(date.from, "LLL dd, y")
-                    )
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
           </div> */}
+          <FormField
+            control={form.control}
+            name="picture"
+            rules={{ required: "Photo is required" }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Add Photo</FormLabel>
+                <FormControl>
+                  <Input
+                    id="picture"
+                    type="file"
+                    onChange={(e) => {
+                      addPhoto(e);
+                      field.onChange(e.target.files[0])}}
+                    ref={field.ref} // Attach ref from the field to the input
+                    className="w-[40%]"
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.picture && (
+                    <span>{form.formState.errors.picture.message}</span>
+                  )}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          {preview && <img className="max-w-[30%]" src={preview} alt="" />}
+          
           <FormField
             control={form.control}
             name="title"
@@ -207,7 +203,7 @@ function AddItems() {
                 <FormControl>
                   <Input
                     placeholder="Enter the name of this item"
-                    className="w-[70%]"
+                    className="w-[40%]"
                     {...field}
                     {...form.register("title", {
                       required: "Item name is required",
@@ -220,79 +216,6 @@ function AddItems() {
           />
           <FormField
             control={form.control}
-            name="availability"
-            render={({ field }) => (
-              <FormItem className="flex flex-col items-start gap-1">
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Availability</FormLabel>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormDescription className='text-gray-900'>
-                    The category is not visible in the menu
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
-          {form.getValues('availability') && (
-            <FormField
-            control={form.control}
-            name="daterange"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Start Date - End Date</FormLabel>
-                <FormControl>
-                  <div className={cn("grid gap-2")}>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          id="date"
-                          variant={"outline"}
-                          className={cn(
-                            "w-[300px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date?.from ? (
-                            date.to ? (
-                              <>
-                                {format(date.from, "LLL dd, y")} -{" "}
-                                {format(date.to, "LLL dd, y")}
-                              </>
-                            ) : (
-                              format(date.from, "LLL dd, y")
-                            )
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          initialFocus
-                          mode="range"
-                          defaultMonth={date?.from}
-                          selected={date}
-                          onSelect={setDate}
-                          numberOfMonths={2}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          )}
-          <FormField
-            control={form.control}
             name="price"
             render={({ field }) => (
               <FormItem>
@@ -301,7 +224,7 @@ function AddItems() {
                   <Input
                     type="number"
                     placeholder="Enter the amount"
-                    className="w-[70%]"
+                    className="w-[40%]"
                     {...field}
                     {...form.register("price", {
                       required: "Price is required",
@@ -320,7 +243,7 @@ function AddItems() {
               <FormItem>
                 <FormLabel>Category</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl className="w-[70%]">
+                  <FormControl className="w-[40%]">
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
@@ -344,6 +267,78 @@ function AddItems() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="availability"
+            render={({ field }) => (
+              <FormItem className="flex flex-col items-start gap-1">
+                <div className="flex items-center gap-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-gray-900">
+                    Available at specified dates
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          {form.getValues("availability") && (
+            <FormField
+              control={form.control}
+              name="daterange"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start Date - End Date</FormLabel>
+                  <FormControl>
+                    <div className={cn("grid gap-2")}>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="date"
+                            variant={"outline"}
+                            className={cn(
+                              "w-[300px] justify-start text-left font-normal",
+                              !date && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date?.from ? (
+                              date.to ? (
+                                <>
+                                  {format(date.from, "LLL dd, y")} -{" "}
+                                  {format(date.to, "LLL dd, y")}
+                                </>
+                              ) : (
+                                format(date.from, "LLL dd, y")
+                              )
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={date?.from}
+                            selected={date}
+                            onSelect={(selectedDate) => {
+                              field.onChange(selectedDate); // Update the form state
+                            }}
+                            numberOfMonths={2}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          )}
           <Button className="bg-orange-500 text-white">
             {id ? "Update" : "Submit"}
           </Button>

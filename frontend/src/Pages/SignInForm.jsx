@@ -43,7 +43,7 @@ function SignInForm() {
       }
     } catch (error) {
       console.log("Error submitting the form", error);
-      setError(error.response.data?.error);
+      setError(error.response?.data?.error);
     }
   };
 
@@ -101,7 +101,7 @@ function SignInForm() {
             )}
           />
           <div className="w-full flex items-center justify-between">
-            <Button className="bg-orange-500 text-white">Register</Button>
+            <Button className="bg-orange-500 text-white">Login</Button>
             <span className="text-sm text-gray-400">
               Don't have an account?
               <Link to={'/sign-up'} className=" text-orange-400 ml-1">Sign up</Link>

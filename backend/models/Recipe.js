@@ -22,10 +22,14 @@ const RecipeSchema = new schema ({
     imgUrl : {
         type : String,
     },
+    availability : {
+        type : Boolean,
+        default : false
+    },
     startDate: {
         type: Date,
       },
-      endDate: {
+    endDate: {
         type: Date,
       },
 },{timestamps : true});

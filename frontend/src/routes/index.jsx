@@ -12,9 +12,12 @@ import SignUpForm from "@/Pages/SignUpForm.jsx";
 import SignInForm from "@/Pages/SignInForm.jsx";
 import App from "@/App.jsx";
 import { AuthContext } from "@/contexts/authContext.jsx";
+import Option from "@/Pages/Option";
+import NewOption from "@/Pages/NewOption";
 
 function index() {
   const {user} = useContext(AuthContext);
+  console.log(user);
 
   const router = createBrowserRouter([
     {
@@ -57,6 +60,14 @@ function index() {
           path: "/menus/editItems/:id",
           element: user ? <AddItems /> : <Navigate to={'/sign-in'}/> ,
         },
+        {
+            path: "/optionGroups",
+            element: <Option/> ,
+          },
+          {
+            path: "/optionGroups/addOptions",
+            element: <NewOption />,
+          },
         {
           path: "/sign-up",
           element: !user ? <SignUpForm /> : <Navigate to={'/'}/>,

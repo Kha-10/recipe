@@ -16,7 +16,20 @@ function Home() {
   useEffect(() => {
     const fetchRecipes = async () => {
       const response = await axios("/api/recipes?page=" + page);
-      console.log(response.data.data);
+      const now = new Date()
+
+       // Filter recipes that are available based on startDate and endDate
+      //  const filteredRecipes = response.data.data.filter(res => {
+      //   const startDate = new Date(res.startDate);
+      //   const endDate = new Date(res.endDate);
+      //   return now >= startDate && now <= endDate;
+      // });
+
+      // if(filteredRecipes.length > 0) {
+      //   setRecipes(filteredRecipes)
+      // }else {
+      //   setRecipes(response.data.data);
+      // }
       setRecipes(response.data.data);
       setPagination(response.data.pagination);
       window.scroll({ top: 0, left: 0, behavior: "smooth" });
