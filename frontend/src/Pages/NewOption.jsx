@@ -73,14 +73,16 @@ const NewOption = () => {
 
   const handleFocus = (event, index) => {
     const value = event.target.value;
+    if (!value) return value;
     const formattedValue = value.split(",").join("");
     form.setValue(`options.${index}.price`, formattedValue);
     // setInputType("number");
-    form.setValue(`options.${index}.type`, "number");
+    return form.setValue(`options.${index}.type`, "number");
   };
 
   const handleBlur = (event, index) => {
     const value = event.target.value;
+    if (!value) return value;
     console.log(value);
     const formattedValue = new Intl.NumberFormat().format(value);
     form.setValue(`options.${index}.price`, formattedValue);
