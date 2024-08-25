@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,21 +44,48 @@ const NewOption = () => {
   const form = useForm({
     defaultValues: {
       title: "",
-      options: [{ name: "", price: 0 }],
+      options: [{ name: "", price: "", type: "number" }],
+      mode: "onTouched",
+      shouldUnregister: true,
     },
   });
 
-  const [optionLists, setOptionLists] = useState([{ name: "", price: 0 }]);
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "options",
+  });
 
   const navigate = useNavigate();
 
   const { id } = useParams();
 
-  const addNewInput = () => {
-    setOptionLists([...optionLists, { name: "", price: 0 }]);
-  };
-  console.log(optionLists);
+  //   const [inputType, setInputType] = useState("number");
 
+  //   const formatNumber = (value) => {
+  //     if (!value) return value;
+  //     return parseInt(value).toLocaleString();
+  //   };
+
+  //   const unformatNumber = (value) => {
+  //     if (!value) return value;
+  //     return value.split(",").join("");
+  //   };
+
+  const handleFocus = (event, index) => {
+    const value = event.target.value;
+    const formattedValue = value.split(",").join("");
+    form.setValue(`options.${index}.price`, formattedValue);
+    // setInputType("number");
+    form.setValue(`options.${index}.type`, "number");
+  };
+
+  const handleBlur = (event, index) => {
+    const value = event.target.value;
+    console.log(value);
+    const formattedValue = new Intl.NumberFormat().format(value);
+    form.setValue(`options.${index}.price`, formattedValue);
+    form.setValue(`options.${index}.type`, "text");
+  };
   const onSubmit = async (data) => {
     console.log(data);
   };
@@ -90,6 +117,12 @@ const NewOption = () => {
     };
     getCategories();
   }, []);
+
+  const options = form.getValues("options");
+  const allFilled =
+    options[options.length - 1].name && options[options.length - 1].price;
+
+  console.log(form.formState.errors.options);
 
   return (
     <div className="space-y-3 max-w-screen-lg mx-auto">
@@ -124,68 +157,155 @@ const NewOption = () => {
           <FormField
             control={form.control}
             name="options"
-            render={() => (
-              <FormItem>
-                <div className="w-[40%] flex items-center justify-between">
-                  <FormLabel>Options</FormLabel>
-                  <Button
-                    onClick={addNewInput}
-                    className="w-[100px] bg-transparent px-0 py-0 text-orange-400 text-xs hover:bg-transparent"
-                  >
-                    Add new opition
-                  </Button>
-                </div>
-                <FormControl>
-                  <div className=" space-y-8">
-                    {!!optionLists &&
-                      optionLists.map((option, i) => (
-                        <div key={i} className="space-y-2">
-                          <Input
-                            rules={{ required: "Option name is required" }}
-                            type="text"
-                            placeholder="Enter the option name"
-                            className="w-[40%]"
-                            {...form.register(`options.${i}.name`, {
-                              required: "Option name is required",
-                            })}
-                          />
-                          {form.formState.errors.options?.[i]?.name && (
-                            <div>{form.formState.errors.options[i]?.name.message}</div>
-                          )}
-                          {/* <FormMessage>
-                            {form.formState.errors.options?.[i]?.name && (
-                              <span className="text-red-500">
-                                {form.formState.errors.options[i].name.message}
-                              </span>
+            render={() => {
+              return (
+                <FormItem>
+                  <div className="w-[40%] flex items-center justify-between">
+                    <FormLabel>Options</FormLabel>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        allFilled &&
+                          append(
+                            { name: "", price: "" },
+                            { shouldFocus: false }
+                          );
+                      }}
+                      className="w-[100px] bg-transparent px-0 py-0 text-orange-400 text-xs hover:bg-transparent"
+                    >
+                      Add new opition
+                    </Button>
+                  </div>
+                  <FormControl>
+                    <div className="space-y-6 px-4">
+                      {fields.map((item, index) => (
+                        <div key={index} className="space-y-2">
+                          <div>
+                            <FormLabel>Option name</FormLabel>
+                            <Input
+                              type="text"
+                              placeholder="Enter the option name"
+                              className="w-[40%] mt-2"
+                              {...form.register(`options.${index}.name`, {
+                                required: "Option name is required",
+                              })}
+                            />
+                            {form.formState.errors.options?.[index]?.name && (
+                              <p className="text-sm text-red-500 font-medium mt-2">
+                                {
+                                  form.formState.errors.options[index]?.name
+                                    .message
+                                }
+                              </p>
                             )}
-                          </FormMessage> */}
-                          <Input
-                            rules={{ required: "Price name is required" }}
-                            type="number"
-                            placeholder="Enter the amount"
-                            className="w-[40%]"
-                            {...form.register(`options.${i}.price`, {
-                              required: "Price is required",
-                            })}
-                          />
-                          {/* <FormMessage>
-                            {form.formState.errors.options?.[i]?.price && (
-                              <span className="text-red-500">
-                                {form.formState.errors.options[i].price.message}
-                              </span>
+                          </div>
+
+                          <div>
+                            <FormLabel>Additional price</FormLabel>
+                            <Controller
+                              control={form.control}
+                              name={`options.${index}.price`} // Correct path for the specific price field
+                              rules={{
+                                required: "Price is required", // You can also add a custom error message
+                              }}
+                              render={({
+                                field: { onChange, onBlur, value },
+                              }) => (
+                                <Input
+                                  value={value} // Use the value provided by Controller
+                                  type={form.watch(`options.${index}.type`)} // Assuming this is managed elsewhere
+                                  onFocus={(e) => handleFocus(e, index)}
+                                  onBlur={(e) => {
+                                    onBlur(); // Trigger the onBlur event provided by Controller
+                                    handleBlur(e, index);
+                                  }}
+                                  onChange={(e) => {
+                                    onChange(e.target.value); // Trigger the onChange event provided by Controller
+                                    form.setValue(
+                                      `options.${index}.price`,
+                                      e.target.value
+                                    );
+                                  }}
+                                  placeholder="Enter the amount"
+                                  className="w-[40%] mt-2"
+                                />
+                              )}
+                            />
+                            {form.formState.errors.options?.[index]?.price && (
+                              <p className="text-sm text-red-500 font-medium mt-2">
+                                {
+                                  form.formState.errors.options[index].price
+                                    .message
+                                }
+                              </p>
                             )}
-                          </FormMessage> */}
-                          {form.formState.errors.options?.[i]?.price && (
-                            <div>{form.formState.errors.options[i]?.price.message}</div>
-                          )}
+                          </div>
                         </div>
                       ))}
-                  </div>
-                </FormControl>
-                {/* <FormMessage /> */}
-              </FormItem>
-            )}
+                      {/* {!!optionLists &&
+                        optionLists.map((option, i) => (
+                          <div key={i} className="space-y-2">
+                            <Input
+                              type="text"
+                              placeholder="Enter the option name"
+                              className="w-[40%]"
+                              {...form.register(`options.${i}.name`, {
+                                required: "Option name is required",
+                              })}
+                            />
+                            {form.formState.errors.options?.[i]?.name && (
+                              <div>
+                                {form.formState.errors.options[i]?.name.message}
+                              </div>
+                            )}
+                            <Controller
+                              name={`options.${i}.price`}
+                              control={form.control}
+                              rules={{ required: "Price is required" }}
+                              render={({ field }) => (
+                                <Input
+                                  value={field.value}
+                                  type={inputType}
+                                  onFocus={() => {
+                                    setInputType("number");
+                                    form.setValue(
+                                      "options.0.price",
+                                      unformatNumber(field.value)
+                                    );
+                                  }}
+                                  onBlur={() => {
+                                    setInputType("text");
+                                    form.setValue(
+                                      `options.0.price`,
+                                      formatNumber(field.value)
+                                    );
+                                  }}
+                                  onChange={(e) => {
+                                    field.onChange(e); 
+                                  }}
+                                  placeholder="Enter the amount"
+                                  className="w-[40%]"
+                                />
+                              )}
+                            />
+
+                            {form.formState.errors.options?.[i]?.price && (
+                              <div>
+                                {
+                                  form.formState.errors.options[i]?.price
+                                    .message
+                                }
+                              </div>
+                            )}
+                          </div>
+                        ))} */}
+                    </div>
+                  </FormControl>
+                </FormItem>
+              );
+            }}
           />
+
           <Button className="bg-orange-500 text-white">
             {id ? "Update" : "Submit"}
           </Button>

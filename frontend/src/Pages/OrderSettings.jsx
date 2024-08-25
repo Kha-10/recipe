@@ -7,10 +7,6 @@ function OrderSettings() {
   const formatNumber = (value) => {
     if (!value) return value;
     return parseInt(value).toLocaleString();
-    // const parts = value.toString().split('.');
-    // parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-    // return parts.join('.');
   };
 
   const unformatNumber = (value) => {
@@ -20,7 +16,6 @@ function OrderSettings() {
 
   const handleFocus = () => {
     setInputType("number");
-    // setInputValue(inputValue.replace(/,/g, ''));
     if(inputValue) {
         setInputValue(unformatNumber(inputValue))
     }
