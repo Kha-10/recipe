@@ -25,7 +25,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-// import { DateRange } from "react-day-picker"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -45,8 +45,11 @@ const NewOption = () => {
     defaultValues: {
       title: "",
       options: [{ name: "", price: "", type: "number" }],
-      mode: "onTouched",
-      shouldUnregister: true,
+      type: "",
+      fixedOptionValue: "Exactly",
+      exactly: 1,
+      between: 1,
+      upto: 1,
     },
   });
 
@@ -77,13 +80,12 @@ const NewOption = () => {
     const formattedValue = value.split(",").join("");
     form.setValue(`options.${index}.price`, formattedValue);
     // setInputType("number");
-    return form.setValue(`options.${index}.type`, "number");
+    form.setValue(`options.${index}.type`, "number");
   };
 
   const handleBlur = (event, index) => {
     const value = event.target.value;
     if (!value) return value;
-    console.log(value);
     const formattedValue = new Intl.NumberFormat().format(value);
     form.setValue(`options.${index}.price`, formattedValue);
     form.setValue(`options.${index}.type`, "text");
@@ -124,7 +126,12 @@ const NewOption = () => {
   const allFilled =
     options[options.length - 1].name && options[options.length - 1].price;
 
-  console.log(form.formState.errors.options);
+  const fixedOptionRange = ["Exactly", "Between"];
+
+  useEffect(() => {
+    form.setValue("between", options.length);
+    form.setValue("upto", options.length);
+  }, [options]);
 
   return (
     <div className="space-y-3 max-w-screen-lg mx-auto">
@@ -179,7 +186,7 @@ const NewOption = () => {
                     </Button>
                   </div>
                   <FormControl>
-                    <div className="space-y-6 px-4">
+                    <div className="space-y-6 px-2">
                       {fields.map((item, index) => (
                         <div key={index} className="space-y-2">
                           <div>
@@ -206,23 +213,23 @@ const NewOption = () => {
                             <FormLabel>Additional price</FormLabel>
                             <Controller
                               control={form.control}
-                              name={`options.${index}.price`} // Correct path for the specific price field
+                              name={`options.${index}.price`}
                               rules={{
-                                required: "Price is required", // You can also add a custom error message
+                                required: "Price is required",
                               }}
                               render={({
                                 field: { onChange, onBlur, value },
                               }) => (
                                 <Input
-                                  value={value} // Use the value provided by Controller
-                                  type={form.watch(`options.${index}.type`)} // Assuming this is managed elsewhere
+                                  value={value}
+                                  type={form.watch(`options.${index}.type`)}
                                   onFocus={(e) => handleFocus(e, index)}
                                   onBlur={(e) => {
-                                    onBlur(); // Trigger the onBlur event provided by Controller
+                                    onBlur();
                                     handleBlur(e, index);
                                   }}
                                   onChange={(e) => {
-                                    onChange(e.target.value); // Trigger the onChange event provided by Controller
+                                    onChange(e.target.value);
                                     form.setValue(
                                       `options.${index}.price`,
                                       e.target.value
@@ -244,76 +251,159 @@ const NewOption = () => {
                           </div>
                         </div>
                       ))}
-                      {/* {!!optionLists &&
-                        optionLists.map((option, i) => (
-                          <div key={i} className="space-y-2">
-                            <Input
-                              type="text"
-                              placeholder="Enter the option name"
-                              className="w-[40%]"
-                              {...form.register(`options.${i}.name`, {
-                                required: "Option name is required",
-                              })}
-                            />
-                            {form.formState.errors.options?.[i]?.name && (
-                              <div>
-                                {form.formState.errors.options[i]?.name.message}
-                              </div>
-                            )}
-                            <Controller
-                              name={`options.${i}.price`}
-                              control={form.control}
-                              rules={{ required: "Price is required" }}
-                              render={({ field }) => (
-                                <Input
-                                  value={field.value}
-                                  type={inputType}
-                                  onFocus={() => {
-                                    setInputType("number");
-                                    form.setValue(
-                                      "options.0.price",
-                                      unformatNumber(field.value)
-                                    );
-                                  }}
-                                  onBlur={() => {
-                                    setInputType("text");
-                                    form.setValue(
-                                      `options.0.price`,
-                                      formatNumber(field.value)
-                                    );
-                                  }}
-                                  onChange={(e) => {
-                                    field.onChange(e); 
-                                  }}
-                                  placeholder="Enter the amount"
-                                  className="w-[40%]"
-                                />
-                              )}
-                            />
-
-                            {form.formState.errors.options?.[i]?.price && (
-                              <div>
-                                {
-                                  form.formState.errors.options[i]?.price
-                                    .message
-                                }
-                              </div>
-                            )}
-                          </div>
-                        ))} */}
                     </div>
                   </FormControl>
                 </FormItem>
               );
             }}
           />
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>Selection rules</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="rule1" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Your customer select
+                      </FormLabel>
+                    </FormItem>
+                    {form.getValues("type") == "rule1" && (
+                      <div className="flex items-center gap-3">
+                        <FormField
+                          control={form.control}
+                          name="fixedOptionValue"
+                          rules={{ required: "fixedOptionValue is required" }}
+                          render={({ field }) => (
+                            <FormItem className="w-[20%]">
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <FormControl className="w-[100%]">
+                                  <SelectTrigger>
+                                    <SelectValue
+                                      placeholder={fixedOptionRange[0]}
+                                    />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {!!fixedOptionRange.length &&
+                                    fixedOptionRange.map((opt, i) => (
+                                      <div key={i}>
+                                        <SelectItem value={opt}>
+                                          {opt}
+                                        </SelectItem>
+                                      </div>
+                                    ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage>
+                                {form.formState.errors.category && (
+                                  <span>
+                                    {form.formState.errors.category.message}
+                                  </span>
+                                )}
+                              </FormMessage>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="exactly"
+                          render={({ field }) => (
+                            <FormItem className="w-[8%]">
+                              <FormControl>
+                                <Input
+                                  value={field.value}
+                                  className="w-[100%]"
+                                  {...field}
+                                  {...form.register("exactly", {
+                                    required: "Option group name is required",
+                                  })}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        {form.getValues("fixedOptionValue") == "Between" && (
+                          <FormField
+                            control={form.control}
+                            name="between"
+                            render={({ field }) => (
+                              <FormItem className="w-[8%]">
+                                <FormControl>
+                                  <Input
+                                    value={options.length}
+                                    placeholder={options.length}
+                                    className="w-[100%]"
+                                    {...field}
+                                    {...form.register("between", {
+                                      required: "Option group name is required",
+                                    })}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+                      </div>
+                    )}
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="rule2" />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        Optional for your customer to select
+                      </FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {form.watch("type") == "rule2" && (
+            <FormField
+              control={form.control}
+              name="upto"
+              render={({ field }) => (
+                <FormItem className="w-[8%]">
+                  <FormLabel className="font-normal">Up to</FormLabel>
+                  <FormControl>
+                    <Input
+                      value={field.value}
+                      placeholder={field.value}
+                      className="w-[100%]"
+                      {...field}
+                      {...form.register("upto", {
+                        required: "Option group name is required",
+                      })}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <Button className="bg-orange-500 text-white">
             {id ? "Update" : "Submit"}
           </Button>
         </form>
       </Form>
-      <DevTool control={form.control} />
+      {/* <DevTool control={form.control} /> */}
     </div>
   );
 };
