@@ -7,7 +7,7 @@ const Options = ({ menus, deleteHandler }) => {
       <div className="w-full flex items-center justify-between p-4 bg-white border-b border-slate-200 rounded-t-lg">
         <p>Options</p>
         <Link
-          to={"/optionGroups/addOptions"}
+          to={"/menus/optionGroups/addOptions"}
           className="text-white w-[140px] h-[30px] py-1 px-2 bg-orange-400 text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
         >
           <svg

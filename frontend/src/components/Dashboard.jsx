@@ -7,6 +7,9 @@ function Dashboard() {
   const pathname = location.pathname;
   const {id} = useParams();
 
+  const menuPaths = ["/menus", "/menus/addItems", `/menus/editItems/${id}`,'/menus/optionGroups','/menus/optionGroups/addOptions'];
+  const isMenuActive =  menuPaths.includes(pathname);
+
   return (
     <div className="h-full overflow-hidden text-sm">
        <ul className="space-y-1">
@@ -26,7 +29,7 @@ function Dashboard() {
                 Orders
             </Link>
         </li>
-        <li className={`hover:bg-slate-100 p-3 rounded ${(pathname === "/menus" || pathname === "/menus/addItems" || pathname == `/menus/editItems/${id}`) ? 'bg-slate-100 text-orange-500 hover:bg-slate-100' : "bg-transparent"}`}>
+        <li className={`hover:bg-slate-100 p-3 rounded ${isMenuActive ? 'bg-slate-100 text-orange-500 hover:bg-slate-100' : "bg-transparent"}`}>
             <Link to={'/menus'} className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />

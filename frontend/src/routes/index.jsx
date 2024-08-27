@@ -61,11 +61,11 @@ function index() {
           element: user ? <AddItems /> : <Navigate to={'/sign-in'}/> ,
         },
         {
-            path: "/optionGroups",
+            path: "/menus/optionGroups",
             element: <Option/> ,
           },
           {
-            path: "/optionGroups/addOptions",
+            path: "/menus/optionGroups/addOptions",
             element: <NewOption />,
           },
         {
