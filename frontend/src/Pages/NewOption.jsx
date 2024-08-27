@@ -46,10 +46,10 @@ const NewOption = () => {
       title: "",
       options: [{ name: "", price: "", type: "number" }],
       type: "",
-      fixedOptionValue: "Exactly",
-      exactly: 1,
-      between: 1,
-      upto: 1,
+      //   fixedOptionValue: "Exactly",
+      //   exactly: 1,
+      //   between: 1,
+      //   upto: 1,
     },
   });
 
@@ -91,7 +91,13 @@ const NewOption = () => {
     form.setValue(`options.${index}.type`, "text");
   };
   const onSubmit = async (data) => {
-    console.log(data);
+    const filteredData = Object.entries(data).reduce((acc, [key, value]) => {
+      if (value !== null) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+    console.log(filteredData);
   };
 
   useEffect(() => {
@@ -129,9 +135,30 @@ const NewOption = () => {
   const fixedOptionRange = ["Exactly", "Between"];
 
   useEffect(() => {
-    form.setValue("between", options.length);
-    form.setValue("upto", options.length);
-  }, [options]);
+    if (form.getValues("fixedOptionValue") == "Between") {
+      form.setValue("between", options.length);
+    }
+  }, [form.watch("fixedOptionValue")]);
+
+  useEffect(() => {
+    if (form.getValues("type") == "rule1") {
+      if (!form.getValues("fixedOptionValue")) {
+        form.setValue("fixedOptionValue", "Exactly");
+        form.setValue("exactly", 1);
+        form.setValue("between", null);
+        form.setValue("upto", null);
+      } else if (form.getValues("fixedOptionValue") == "Between") {
+        form.setValue("between", options.length);
+        form.setValue("upto", null);
+      }
+    }
+    if (form.getValues("type") == "rule2") {
+      form.setValue("upto", form.getValues("options").length);
+      form.setValue("fixedOptionValue", null);
+      form.setValue("exactly", null);
+      form.setValue("between", null);
+    }
+  }, [form.watch("type"), form.watch("options")]);
 
   return (
     <div className="space-y-3 max-w-screen-lg mx-auto">
@@ -324,6 +351,7 @@ const NewOption = () => {
                             <FormItem className="w-[8%]">
                               <FormControl>
                                 <Input
+                                  type="number"
                                   value={field.value}
                                   className="w-[100%]"
                                   {...field}
@@ -344,6 +372,7 @@ const NewOption = () => {
                               <FormItem className="w-[8%]">
                                 <FormControl>
                                   <Input
+                                    type="number"
                                     value={options.length}
                                     placeholder={options.length}
                                     className="w-[100%]"
@@ -383,6 +412,7 @@ const NewOption = () => {
                   <FormLabel className="font-normal">Up to</FormLabel>
                   <FormControl>
                     <Input
+                      type="number"
                       value={field.value}
                       placeholder={field.value}
                       className="w-[100%]"
@@ -403,7 +433,7 @@ const NewOption = () => {
           </Button>
         </form>
       </Form>
-      {/* <DevTool control={form.control} /> */}
+      <DevTool control={form.control} />
     </div>
   );
 };
