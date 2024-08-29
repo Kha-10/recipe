@@ -10,12 +10,15 @@ function Option() {
 
   const getRecipes = async () => {
     try {
-      let url = "/api/recipes";
+      let url = "/api/optionGroups";
 
       const res = await axios.get(url);
       if (res.status === 200) {
-        setRecipes(res.data.data);
-        setMenus(res.data.data);
+        console.log(res.data);
+        setRecipes(res.data)
+        setMenus(res.data);
+        // setRecipes(res.data.data);
+        // setMenus(res.data.data);
       }
     } catch (error) {
       console.error("Error fetching recipes:", error);

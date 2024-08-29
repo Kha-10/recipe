@@ -29,9 +29,16 @@ const Options = ({ menus, deleteHandler }) => {
       </div>
       <div className="w-full max-h-[624px] overflow-y-auto divide-y example">
         {menus.map((menu) => (
-          <div key={menu._id} className="w-full bg-white p-5">
+          <div key={menu._id} className="w-full bg-white px-5 py-2">
             <div className="flex items-center justify-between">
-              <p className="text-base">{menu.title}</p>
+              <div className="space-y-5">
+              {menu.options.map((opt) =>(
+                <div key={opt._id} className="text-base space-y-1">
+                    <p>{opt.name}</p>
+                    <p className="text-gray-500 text-xs">{opt.price} Baht</p>
+                </div>
+              ))}
+              </div>
               <div className="flex items-center gap-3">
                 <Link
                   to={`/menus/editItems/${menu._id}`}

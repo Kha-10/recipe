@@ -22,18 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { addDays, format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
 import axios from "../helper/axios";
 
 const NewOption = () => {
@@ -46,10 +35,6 @@ const NewOption = () => {
       title: "",
       options: [{ name: "", price: "", type: "number" }],
       type: "",
-      //   fixedOptionValue: "Exactly",
-      //   exactly: 1,
-      //   between: 1,
-      //   upto: 1,
     },
   });
 
@@ -97,7 +82,15 @@ const NewOption = () => {
       }
       return acc;
     }, {});
-    console.log(filteredData);
+    let res ;
+    if(id) {
+        res = await axios.patch("/api/optionGroups/" + id, filteredData);
+    } else {
+        res = await axios.post("/api/optionGroups/", filteredData);
+    }
+    if(res.status == 200) {
+        navigate('/menus/optionGroups')
+    }
   };
 
   useEffect(() => {
@@ -147,6 +140,8 @@ const NewOption = () => {
         form.setValue("exactly", 1);
         form.setValue("between", null);
         form.setValue("upto", null);
+      } else if (form.getValues("fixedOptionValue") == "Exactly" ) {
+        form.setValue("between", null);
       } else if (form.getValues("fixedOptionValue") == "Between") {
         form.setValue("between", options.length);
         form.setValue("upto", null);
@@ -158,7 +153,7 @@ const NewOption = () => {
       form.setValue("exactly", null);
       form.setValue("between", null);
     }
-  }, [form.watch("type"), form.watch("options")]);
+  }, [form.watch("type"), form.watch("options"),form.watch('fixedOptionValue')]);
 
   return (
     <div className="space-y-3 max-w-screen-lg mx-auto">
@@ -378,7 +373,7 @@ const NewOption = () => {
                                     className="w-[100%]"
                                     {...field}
                                     {...form.register("between", {
-                                      required: "Option group name is required",
+                                      required: "You must set at least one",
                                     })}
                                   />
                                 </FormControl>

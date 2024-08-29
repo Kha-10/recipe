@@ -83,6 +83,8 @@ const OptionGroups = ({recipes,getMenusBycategory}) => {
   };
 
   const getQuantity = (id, recipes) => {
+    console.log(id);
+    console.log(recipes);
     return recipes.filter((item) => item.category?._id == id).length;
   };
 
@@ -172,18 +174,19 @@ const OptionGroups = ({recipes,getMenusBycategory}) => {
         </Dialog>
       </div>
       <div className="bg-white max-h-[635px] divide-y example divide-slate-100 overflow-auto">
-        {!!categories.length &&
-          categories.map((category) => (
+        {!!recipes.length >0 &&
+          recipes.map((recipe) => (
             <div
-              key={category._id}
-              onClick={() => getSingleCategory(category._id)}
+              key={recipe._id}
+              onClick={() => getSingleCategory(recipe._id)}
               className={`w-full ${
-                categoryId == category._id ? "bg-orange-50" : "bg-transparent"
+                categoryId == recipe._id ? "bg-orange-50" : "bg-transparent"
               } flex items-center justify-between p-3 text-sm hover:bg-orange-50 rounded`}
             >
-              <p>{category.title}</p>
+              <p>{recipe.title}</p>
               <div className="flex items-center gap-2">
-                <p>{getQuantity(category._id, recipes)}</p>
+                {/* <p>{getQuantity(recipe._id, recipes)}</p> */}
+                <p>{recipe.options.length}</p>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center">
                     <svg
@@ -205,13 +208,13 @@ const OptionGroups = ({recipes,getMenusBycategory}) => {
                     <DropdownMenuItem
                       onClick={() => {
                         setIsOpened(true);
-                        getCategories(category._id);
+                        getCategories(recipe._id);
                       }}
                     >
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => deleteCategoryHandler(category._id)}
+                      onClick={() => deleteCategoryHandler(recipe._id)}
                     >
                       Delete
                     </DropdownMenuItem>

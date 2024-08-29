@@ -11,8 +11,8 @@ router.get('',RecipesController.index)
 
 router.post('',[
     body('title').notEmpty(),
-    body('price').notEmpty(),
-    body('category').notEmpty(),
+    body('options.*.name').notEmpty(),
+    body('options.*.price').notEmpty()
 ],handleErrorMessage,RecipesController.store)
 
 router.get('/:id',RecipesController.show)

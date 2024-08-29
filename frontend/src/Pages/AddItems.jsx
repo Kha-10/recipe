@@ -69,9 +69,9 @@ function AddItems() {
   const onSubmit = async (data) => {
     delete data.picture
     if (!data.availability) {
-      delete data.daterange; // Removes the daterange key from the data object
+      delete data.daterange; 
     }
-    console.log(data);
+
     try {
       let res;
       if (id) {
@@ -327,7 +327,7 @@ function AddItems() {
                             defaultMonth={date?.from}
                             selected={date}
                             onSelect={(selectedDate) => {
-                              field.onChange(selectedDate); // Update the form state
+                              field.onChange(selectedDate);
                             }}
                             numberOfMonths={2}
                           />

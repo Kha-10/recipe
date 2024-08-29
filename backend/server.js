@@ -10,6 +10,8 @@ const categoryRoutes = require('./routes/category')
 
 const userRoutes = require('./routes/users')
 
+const optionGroupRoutes = require('./routes/optionGroup')
+
 const mongoose = require('mongoose')
 
 const cors = require ('cors')
@@ -82,6 +84,8 @@ app.get('/',(req,res)=> {
 app.use('/api/recipes',authMiddleware,recipieRoutes)
 
 app.use('/api/categories',authMiddleware,categoryRoutes)
+
+app.use('/api/optionGroups',optionGroupRoutes)
 
 app.use('/api/users',userRoutes)
 
