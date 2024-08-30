@@ -45,7 +45,7 @@ function AddItems() {
     defaultValues: {
       picture: "",
       title: "",
-      price: 0,
+      priceInput: { price: "", type: "number" },
       category: "",
       availability: false,
       daterange: {
@@ -55,21 +55,34 @@ function AddItems() {
     },
   });
 
-  // const [date, setDate] = useState({
-  //   from: new Date(),
-  //   to: addDays(new Date(), 20),
-  // });
-
   const date = form.watch("daterange");
 
   const navigate = useNavigate();
 
   const { id } = useParams();
 
+  const handleFocus = (event) => {
+    const value = event.target.value;
+    if (!value) return value;
+    const formattedValue = value.split(",").join("");
+    form.setValue('priceInput.price', formattedValue);
+    // setInputType("number");
+    form.setValue('priceInput.type', "number");
+  };
+
+  const handleBlur = (event, index) => {
+    const value = event.target.value;
+    if (!value) return value;
+    const formattedValue = new Intl.NumberFormat().format(value);
+    form.setValue('priceInput.price', formattedValue);
+    form.setValue('priceInput.type', "text");
+  };
+
   const onSubmit = async (data) => {
-    delete data.picture
+    data.price = form.getValues('priceInput.price')
+    delete data.picture;
     if (!data.availability) {
-      delete data.daterange; 
+      delete data.daterange;
     }
 
     try {
@@ -82,6 +95,7 @@ function AddItems() {
       } else {
         res = await axios.post("/api/recipes/", data);
       }
+      console.log(res);
       let formData = new FormData();
       formData.set("photo", files);
 
@@ -101,7 +115,7 @@ function AddItems() {
       //   uploadRes = await axios.post(
       //     `/api/recipes/${res.data._id}/upload`,res.data.photo);
       // }
-      console.log("uploadRes", uploadRes);
+      // console.log("uploadRes", uploadRes);
       if (res.status == 200) {
         navigate("/");
       }
@@ -119,8 +133,9 @@ function AddItems() {
           setPreview(import.meta.env.VITE_AWS_URL + "/" + res.data.photo);
           setItemData(res.data.photo);
           form.setValue("title", res.data.title);
-          form.setValue("price", res.data.price);
+          form.setValue('priceInput.price', res.data.price);
           form.setValue("category", res.data.category?._id);
+          form.setValue("picture", res.data.photo);
         }
       }
     };
@@ -150,22 +165,13 @@ function AddItems() {
   };
 
   return (
-    <div className="space-y-3 max-w-screen-lg mx-auto">
+    <div className="space-y-3 max-w-screen-lg mx-auto mt-3">
       <h1 className="text-xl font-semibold">{id ? "Edit item" : "Add item"}</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-5 bg-white p-5 rounded-lg shadow-sm border border-slate-200"
         >
-          {/* <div className="grid w-full max-w-sm items-center gap-1.5 mb-4 space-y-1">
-            <Label htmlFor="picture">Add photo</Label>
-            <Input
-              id="picture"
-              name="picture"
-              type="file"
-              onChange={addPhoto}
-            />
-          </div> */}
           <FormField
             control={form.control}
             name="picture"
@@ -179,8 +185,9 @@ function AddItems() {
                     type="file"
                     onChange={(e) => {
                       addPhoto(e);
-                      field.onChange(e.target.files[0])}}
-                    ref={field.ref} // Attach ref from the field to the input
+                      field.onChange(e.target.files[0]);
+                    }}
+                    ref={field.ref}
                     className="w-[40%]"
                   />
                 </FormControl>
@@ -193,7 +200,7 @@ function AddItems() {
             )}
           />
           {preview && <img className="max-w-[30%]" src={preview} alt="" />}
-          
+
           <FormField
             control={form.control}
             name="title"
@@ -214,7 +221,7 @@ function AddItems() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="price"
             render={({ field }) => (
@@ -233,6 +240,31 @@ function AddItems() {
                 </FormControl>
                 <FormMessage />
               </FormItem>
+            )}
+          /> */}
+
+          <Controller
+            control={form.control}
+            name={`priceInput.price`}
+            rules={{
+              required: "Price is required",
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                value={value}
+                type={form.watch(`priceInput.type`)}
+                onFocus={(e) => handleFocus(e)}
+                onBlur={(e) => {
+                  onBlur();
+                  handleBlur(e);
+                }}
+                onChange={(e) => {
+                  onChange(e.target.value);
+                  form.setValue(`priceInput.price`, e.target.value);
+                }}
+                placeholder="Enter the amount"
+                className="w-[40%] mt-2"
+              />
             )}
           />
           <FormField

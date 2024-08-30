@@ -38,7 +38,7 @@ const NewOption = () => {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "options",
   });
@@ -82,31 +82,47 @@ const NewOption = () => {
       }
       return acc;
     }, {});
-    let res ;
-    if(id) {
-        res = await axios.patch("/api/optionGroups/" + id, filteredData);
+    let res;
+    if (id) {
+      res = await axios.patch("/api/optionGroups/" + id, filteredData);
     } else {
-        res = await axios.post("/api/optionGroups/", filteredData);
+      res = await axios.post("/api/optionGroups/", filteredData);
     }
-    if(res.status == 200) {
-        navigate('/menus/optionGroups')
+    if (res.status == 200) {
+      navigate("/menus/optionGroups");
     }
   };
 
   useEffect(() => {
     const getMenu = async () => {
-      if (id) {
-        const url = "/api/recipes/" + id;
-        const res = await axios(url);
-        if (res.status == 200) {
-          setPreview(import.meta.env.VITE_AWS_URL + "/" + res.data.photo);
-          setItemData(res.data.photo);
-          form.setValue("title", res.data.title);
-          form.setValue("price", res.data.price);
-          form.setValue("category", res.data.category?._id);
+      try {
+        const url = `/api/optionGroups/${id}`;
+        const res = await axios.get(url);
+
+        if (res.status === 200 && res.data) {
+          const {
+            title,
+            options = [],
+            type,
+            fixedOptionValue,
+            exactly,
+            between,
+          } = res.data;
+
+          form.setValue("title", title);
+          replace(options);
+
+          if (type) form.setValue("type", type);
+          if (fixedOptionValue)
+            form.setValue("fixedOptionValue", fixedOptionValue);
+          if (exactly !== undefined) form.setValue("exactly", exactly);
+          if (between !== undefined) form.setValue("between", between);
         }
+      } catch (error) {
+        console.error("Error fetching menu:", error);
       }
     };
+
     getMenu();
   }, [id]);
 
@@ -123,7 +139,9 @@ const NewOption = () => {
 
   const options = form.getValues("options");
   const allFilled =
-    options[options.length - 1].name && options[options.length - 1].price;
+    options.length > 0 &&
+    options[options.length - 1].name &&
+    options[options.length - 1].price;
 
   const fixedOptionRange = ["Exactly", "Between"];
 
@@ -140,7 +158,7 @@ const NewOption = () => {
         form.setValue("exactly", 1);
         form.setValue("between", null);
         form.setValue("upto", null);
-      } else if (form.getValues("fixedOptionValue") == "Exactly" ) {
+      } else if (form.getValues("fixedOptionValue") == "Exactly") {
         form.setValue("between", null);
       } else if (form.getValues("fixedOptionValue") == "Between") {
         form.setValue("between", options.length);
@@ -153,10 +171,14 @@ const NewOption = () => {
       form.setValue("exactly", null);
       form.setValue("between", null);
     }
-  }, [form.watch("type"), form.watch("options"),form.watch('fixedOptionValue')]);
+  }, [
+    form.watch("type"),
+    form.watch("options"),
+    form.watch("fixedOptionValue"),
+  ]);
 
   return (
-    <div className="space-y-3 max-w-screen-lg mx-auto">
+    <div className="space-y-3 max-w-screen-lg mx-auto mt-3">
       <h1 className="text-xl font-semibold">
         {id ? "Edit option group" : "Add option group"}
       </h1>
@@ -196,7 +218,7 @@ const NewOption = () => {
                     <Button
                       type="button"
                       onClick={() => {
-                        allFilled &&
+                        // allFilled &&
                           append(
                             { name: "", price: "" },
                             { shouldFocus: false }
@@ -209,70 +231,97 @@ const NewOption = () => {
                   </div>
                   <FormControl>
                     <div className="space-y-6 px-2">
-                      {fields.map((item, index) => (
-                        <div key={index} className="space-y-2">
-                          <div>
-                            <FormLabel>Option name</FormLabel>
-                            <Input
-                              type="text"
-                              placeholder="Enter the option name"
-                              className="w-[40%] mt-2"
-                              {...form.register(`options.${index}.name`, {
-                                required: "Option name is required",
-                              })}
-                            />
-                            {form.formState.errors.options?.[index]?.name && (
-                              <p className="text-sm text-red-500 font-medium mt-2">
-                                {
-                                  form.formState.errors.options[index]?.name
-                                    .message
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          <div>
-                            <FormLabel>Additional price</FormLabel>
-                            <Controller
-                              control={form.control}
-                              name={`options.${index}.price`}
-                              rules={{
-                                required: "Price is required",
-                              }}
-                              render={({
-                                field: { onChange, onBlur, value },
-                              }) => (
-                                <Input
-                                  value={value}
-                                  type={form.watch(`options.${index}.type`)}
-                                  onFocus={(e) => handleFocus(e, index)}
-                                  onBlur={(e) => {
-                                    onBlur();
-                                    handleBlur(e, index);
-                                  }}
-                                  onChange={(e) => {
-                                    onChange(e.target.value);
-                                    form.setValue(
-                                      `options.${index}.price`,
-                                      e.target.value
-                                    );
-                                  }}
-                                  placeholder="Enter the amount"
-                                  className="w-[40%] mt-2"
-                                />
+                      {fields.length > 0 &&
+                        fields.map((item, index) => (
+                          <div key={item.id} className="space-y-2">
+                            <div>
+                              <div className="w-[40%] flex items-center justify-between">
+                                <FormLabel>Option name</FormLabel>
+                                {options.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      remove(index)
+                                    }
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="red"
+                                      viewBox="0 0 24 24"
+                                      strokeWidth={1.5}
+                                      stroke="white"
+                                      className="size-5"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+                              </div>
+                              <Input
+                                type="text"
+                                placeholder="Enter the option name"
+                                className="w-[40%] mt-2"
+                                {...form.register(`options.${index}.name`, {
+                                  required: "Option name is required",
+                                })}
+                              />
+                              {form.formState.errors.options?.[index]?.name && (
+                                <p className="text-sm text-red-500 font-medium mt-2">
+                                  {
+                                    form.formState.errors.options[index]?.name
+                                      .message
+                                  }
+                                </p>
                               )}
-                            />
-                            {form.formState.errors.options?.[index]?.price && (
-                              <p className="text-sm text-red-500 font-medium mt-2">
-                                {
-                                  form.formState.errors.options[index].price
-                                    .message
-                                }
-                              </p>
-                            )}
+                            </div>
+
+                            <div>
+                              <FormLabel>Additional price</FormLabel>
+                              <Controller
+                                control={form.control}
+                                name={`options.${index}.price`}
+                                rules={{
+                                  required: "Price is required",
+                                }}
+                                render={({
+                                  field: { onChange, onBlur, value },
+                                }) => (
+                                  <Input
+                                    value={value}
+                                    type={form.watch(`options.${index}.type`)}
+                                    onFocus={(e) => handleFocus(e, index)}
+                                    onBlur={(e) => {
+                                      onBlur();
+                                      handleBlur(e, index);
+                                    }}
+                                    onChange={(e) => {
+                                      onChange(e.target.value);
+                                      form.setValue(
+                                        `options.${index}.price`,
+                                        e.target.value
+                                      );
+                                    }}
+                                    placeholder="Enter the amount"
+                                    className="w-[40%] mt-2"
+                                  />
+                                )}
+                              />
+                              {form.formState.errors.options?.[index]
+                                ?.price && (
+                                <p className="text-sm text-red-500 font-medium mt-2">
+                                  {
+                                    form.formState.errors.options[index].price
+                                      .message
+                                  }
+                                </p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </FormControl>
                 </FormItem>
@@ -288,7 +337,7 @@ const NewOption = () => {
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                     className="flex flex-col space-y-1"
                   >
                     <FormItem className="flex items-center space-x-3 space-y-0">
@@ -299,7 +348,7 @@ const NewOption = () => {
                         Your customer select
                       </FormLabel>
                     </FormItem>
-                    {form.getValues("type") == "rule1" && (
+                    {form.watch("type") == "rule1" && (
                       <div className="flex items-center gap-3">
                         <FormField
                           control={form.control}

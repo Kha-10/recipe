@@ -11,7 +11,7 @@ const RecipeSchema = new schema ({
         type : String,
     },
     price : {
-        type : Number,
+        type : String,
         required : true,
     },
     category : {

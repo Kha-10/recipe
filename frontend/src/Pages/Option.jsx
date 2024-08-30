@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "../helper/axios";
 import OptionGroups from "@/components/OptionGroups";
-import AllItems from "@/components/AllItems";
 import Options from "@/components/Options";
 
 function Option() {
@@ -14,11 +13,8 @@ function Option() {
 
       const res = await axios.get(url);
       if (res.status === 200) {
-        console.log(res.data);
         setRecipes(res.data)
         setMenus(res.data);
-        // setRecipes(res.data.data);
-        // setMenus(res.data.data);
       }
     } catch (error) {
       console.error("Error fetching recipes:", error);
@@ -27,11 +23,11 @@ function Option() {
 
   let getMenusBycategory = async (id) => {
     try {
-      let url = "/api/recipes/" + id;
+      let url = "/api/optionGroups/" + id;
       const res = await axios(url);
-
+      console.log(res.data.options);
       if (res.status === 200) {
-        setMenus(res.data);
+        setMenus(res.data.options);
       } else {
         console.error("Failed to fetch recipes");
       }
@@ -46,7 +42,7 @@ function Option() {
 
   const deleteHandler = async (id) => {
     try {
-      const res = await axios.delete("/api/recipes/" + id);
+      const res = await axios.delete("/api/optionGroups/" + id);
       if (res.status == 200) {
         setMenus((prev) => prev.filter((p) => p._id !== id));
         setRecipes((prev) => prev.filter((p) => p._id !== id));
@@ -57,9 +53,9 @@ function Option() {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto overflow-hidden">
+    <div className="max-w-screen-lg mx-auto overflow-hidden mt-3">
       <div className="flex gap-6">
-        <OptionGroups recipes={recipes} getMenusBycategory={getMenusBycategory} />
+        <OptionGroups recipes={recipes} deleteHandler={deleteHandler} getMenusBycategory={getMenusBycategory} />
         <Options menus={menus} deleteHandler={deleteHandler} />
       </div>
     </div>

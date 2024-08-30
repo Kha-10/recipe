@@ -68,6 +68,10 @@ function index() {
             path: "/menus/optionGroups/addOptions",
             element: <NewOption />,
           },
+          {
+            path: "/menus/optionGroups/editOptions/:id",
+            element: <NewOption />,
+          },
         {
           path: "/sign-up",
           element: !user ? <SignUpForm /> : <Navigate to={'/'}/>,

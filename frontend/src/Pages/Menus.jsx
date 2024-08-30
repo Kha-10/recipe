@@ -53,7 +53,7 @@ function Menus() {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto overflow-hidden">
+    <div className="max-w-screen-lg mx-auto overflow-hidden mt-3">
       <div className="flex gap-6">
         <Categoty recipes={recipes} getMenusBycategory={getMenusBycategory} />
         <AllItems menus={menus} deleteHandler={deleteHandler}/>

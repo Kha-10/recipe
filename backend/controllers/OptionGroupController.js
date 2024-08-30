@@ -68,13 +68,13 @@ const OptionGroupController = {
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ msg: "Invalid id" });
       }
-      let category = await OptionGroup.findByIdAndUpdate(id, {
+      let optionGroup = await OptionGroup.findByIdAndUpdate(id, {
         ...req.body,
       });
-      if (!category) {
-        return res.status(404).json({ msg: "category not found" });
+      if (!optionGroup) {
+        return res.status(404).json({ msg: "optionGroup not found" });
       }
-      return res.json(category);
+      return res.json(optionGroup);
     } catch (error) {
       return res.status(500).json({ msg: "Internrt Server Error" });
     }

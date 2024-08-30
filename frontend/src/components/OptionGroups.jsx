@@ -27,8 +27,9 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "../helper/axios";
+import { useNavigate } from "react-router-dom";
 
-const OptionGroups = ({recipes,getMenusBycategory}) => {
+const OptionGroups = ({recipes,getMenusBycategory,deleteHandler}) => {
   const [isOpened, setIsOpened] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
@@ -38,6 +39,8 @@ const OptionGroups = ({recipes,getMenusBycategory}) => {
     },
   });
 
+  const navigate = useNavigate();
+
   const closeDialog = () => setIsOpened(false);
 
   const getCategories = async (id) => {
@@ -45,12 +48,12 @@ const OptionGroups = ({recipes,getMenusBycategory}) => {
       let res;
       if (id) {
         setCategoryId(id);
-        res = await axios("/api/categories/" + id);
+        res = await axios("/api/optionGroups/" + id);
         if (res.status == 200) {
           form.setValue("title", res.data.title);
         }
       } else {
-        res = await axios("/api/categories/");
+        res = await axios("/api/optionGroups/");
         if (res.status == 200) {
           setCategories(res.data);
         }
@@ -82,96 +85,15 @@ const OptionGroups = ({recipes,getMenusBycategory}) => {
     }
   };
 
-  const getQuantity = (id, recipes) => {
-    console.log(id);
-    console.log(recipes);
-    return recipes.filter((item) => item.category?._id == id).length;
-  };
-
   const getSingleCategory = (id) => {
     setCategoryId(id);
     getMenusBycategory(id);
-  };
-
-  const deleteCategoryHandler = async (id) => {
-    try {
-      const res = await axios.delete("/api/categories/" + id);
-      if (res.status == 200) {
-        setCategories((prev) => prev.filter((p) => p._id !== id));
-      }
-    } catch (error) {
-      console.error("Error deleting the form", error);
-    }
   };
 
   return (
     <div className="w-[30%] flex flex-col shadow-sm border border-slate-200 h-fit">
       <div className="w-full bg-white border-b border-slate-200 rounded-t-lg h-fit text-sm p-3 flex items-center justify-between">
         <p className="w-full">Option Groups</p>
-        <Dialog open={isOpened} onOpenChange={setIsOpened}>
-          <DialogTrigger asChild>
-            <div className="w-full flex items-center justify-end">
-              <Button
-                variant="outline"
-                className="text-orange-400 w-[80px] h-[30px] py-1 px-2 bg-transparent text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-3"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
-                <p>Add</p>
-              </Button>
-            </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add new category</DialogTitle>
-            </DialogHeader>
-            <DialogDescription>Add a new category here.</DialogDescription>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-8"
-              >
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="eg. Noodle,Mala,Soda"
-                          {...field}
-                          {...form.register("title", {
-                            required: "Category name is required",
-                          })}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  className="bg-orange-400 hover:bg-orange-400"
-                >
-                  {categoryId ? "Update" : "Submit"}
-                </Button>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
       </div>
       <div className="bg-white max-h-[635px] divide-y example divide-slate-100 overflow-auto">
         {!!recipes.length >0 &&
@@ -185,7 +107,6 @@ const OptionGroups = ({recipes,getMenusBycategory}) => {
             >
               <p>{recipe.title}</p>
               <div className="flex items-center gap-2">
-                {/* <p>{getQuantity(recipe._id, recipes)}</p> */}
                 <p>{recipe.options.length}</p>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center">
@@ -207,14 +128,13 @@ const OptionGroups = ({recipes,getMenusBycategory}) => {
                   <DropdownMenuContent align="start">
                     <DropdownMenuItem
                       onClick={() => {
-                        setIsOpened(true);
-                        getCategories(recipe._id);
+                        navigate(`/menus/optionGroups/editOptions/${recipe._id}`);
                       }}
                     >
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => deleteCategoryHandler(recipe._id)}
+                      onClick={() => deleteHandler(recipe._id)}
                     >
                       Delete
                     </DropdownMenuItem>

@@ -7,7 +7,7 @@ function Dashboard() {
   const pathname = location.pathname;
   const {id} = useParams();
 
-  const menuPaths = ["/menus", "/menus/addItems", `/menus/editItems/${id}`,'/menus/optionGroups','/menus/optionGroups/addOptions'];
+  const menuPaths = ["/menus", "/menus/addItems", `/menus/editItems/${id}`,'/menus/optionGroups','/menus/optionGroups/addOptions',`/menus/optionGroups/editOptions/${id}`];
   const isMenuActive =  menuPaths.includes(pathname);
 
   return (
