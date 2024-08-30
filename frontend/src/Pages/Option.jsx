@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "../helper/axios";
 import OptionGroups from "@/components/OptionGroups";
 import Options from "@/components/Options";
+import AddandSearch from "@/components/AddandSearch";
 
 function Option() {
   const [recipes, setRecipes] = useState([]);
@@ -44,8 +45,8 @@ function Option() {
     try {
       const res = await axios.delete("/api/optionGroups/" + id);
       if (res.status == 200) {
-        setMenus((prev) => prev.filter((p) => p._id !== id));
-        setRecipes((prev) => prev.filter((p) => p._id !== id));
+        setMenus((prev) => prev.filter(p => p._id !== id));
+        setRecipes((prev) => prev.filter(p => p._id !== id));
       }
     } catch (error) {
       console.error("Error deleting the form", error);
@@ -53,7 +54,8 @@ function Option() {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto overflow-hidden mt-3">
+    <div className="max-w-screen-lg mx-auto overflow-hidden mt-3 space-y-3">
+      <AddandSearch setRecipes={setRecipes} setMenus={setMenus}/>
       <div className="flex gap-6">
         <OptionGroups recipes={recipes} deleteHandler={deleteHandler} getMenusBycategory={getMenusBycategory} />
         <Options menus={menus} deleteHandler={deleteHandler} />

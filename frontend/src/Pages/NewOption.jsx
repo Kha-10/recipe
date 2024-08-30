@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -75,6 +74,7 @@ const NewOption = () => {
     form.setValue(`options.${index}.price`, formattedValue);
     form.setValue(`options.${index}.type`, "text");
   };
+
   const onSubmit = async (data) => {
     const filteredData = Object.entries(data).reduce((acc, [key, value]) => {
       if (value !== null) {
@@ -95,31 +95,33 @@ const NewOption = () => {
 
   useEffect(() => {
     const getMenu = async () => {
-      try {
-        const url = `/api/optionGroups/${id}`;
-        const res = await axios.get(url);
+      if (id) {
+        try {
+          const url = `/api/optionGroups/${id}`;
+          const res = await axios.get(url);
 
-        if (res.status === 200 && res.data) {
-          const {
-            title,
-            options = [],
-            type,
-            fixedOptionValue,
-            exactly,
-            between,
-          } = res.data;
+          if (res.status === 200 && res.data) {
+            const {
+              title,
+              options,
+              type,
+              fixedOptionValue,
+              exactly,
+              between,
+            } = res.data;
 
-          form.setValue("title", title);
-          replace(options);
+            form.setValue("title", title);
+            replace(options);
 
-          if (type) form.setValue("type", type);
-          if (fixedOptionValue)
-            form.setValue("fixedOptionValue", fixedOptionValue);
-          if (exactly !== undefined) form.setValue("exactly", exactly);
-          if (between !== undefined) form.setValue("between", between);
+            if (type) form.setValue("type", type);
+            if (fixedOptionValue)
+              form.setValue("fixedOptionValue", fixedOptionValue);
+            if (exactly !== undefined) form.setValue("exactly", exactly);
+            if (between !== undefined) form.setValue("between", between);
+          }
+        } catch (error) {
+          console.error("Error fetching menu:", error);
         }
-      } catch (error) {
-        console.error("Error fetching menu:", error);
       }
     };
 
@@ -219,10 +221,7 @@ const NewOption = () => {
                       type="button"
                       onClick={() => {
                         // allFilled &&
-                          append(
-                            { name: "", price: "" },
-                            { shouldFocus: false }
-                          );
+                        append({ name: "", price: "" }, { shouldFocus: false });
                       }}
                       className="w-[100px] bg-transparent px-0 py-0 text-orange-400 text-xs hover:bg-transparent"
                     >
@@ -240,9 +239,7 @@ const NewOption = () => {
                                 {options.length > 1 && (
                                   <button
                                     type="button"
-                                    onClick={() =>
-                                      remove(index)
-                                    }
+                                    onClick={() => remove(index)}
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"

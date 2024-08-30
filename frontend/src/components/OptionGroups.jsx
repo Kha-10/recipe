@@ -27,9 +27,10 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "../helper/axios";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-const OptionGroups = ({recipes,getMenusBycategory,deleteHandler}) => {
+const OptionGroups = ({ recipes, getMenusBycategory, deleteHandler }) => {
   const [isOpened, setIsOpened] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
@@ -91,12 +92,32 @@ const OptionGroups = ({recipes,getMenusBycategory,deleteHandler}) => {
   };
 
   return (
-    <div className="w-[30%] flex flex-col shadow-sm border border-slate-200 h-fit">
+    <div className="w-[30%] flex flex-col shadow-sm border border-slate-200 rounded-t-lg h-fit">
       <div className="w-full bg-white border-b border-slate-200 rounded-t-lg h-fit text-sm p-3 flex items-center justify-between">
         <p className="w-full">Option Groups</p>
+        {/* <Link
+          to={"/menus/optionGroups/addOptions"}
+          className="text-white w-[140px] h-[30px] py-1 px-2 bg-orange-400 text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-3"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"
+            />
+          </svg>
+          <p>Add</p>
+        </Link> */}
       </div>
       <div className="bg-white max-h-[635px] divide-y example divide-slate-100 overflow-auto">
-        {!!recipes.length >0 &&
+        {recipes.length > 0 &&
           recipes.map((recipe) => (
             <div
               key={recipe._id}
@@ -128,14 +149,14 @@ const OptionGroups = ({recipes,getMenusBycategory,deleteHandler}) => {
                   <DropdownMenuContent align="start">
                     <DropdownMenuItem
                       onClick={() => {
-                        navigate(`/menus/optionGroups/editOptions/${recipe._id}`);
+                        navigate(
+                          `/menus/optionGroups/editOptions/${recipe._id}`
+                        );
                       }}
                     >
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => deleteHandler(recipe._id)}
-                    >
+                    <DropdownMenuItem onClick={() => deleteHandler(recipe._id)}>
                       Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
