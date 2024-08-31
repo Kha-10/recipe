@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 
 function AllItems({menus,deleteHandler}) {
   return (
-    <div className="w-full h-full shadow-sm border border-slate-200">
+    <div className="w-full h-full shadow-sm border rounded-t-lg border-slate-200">
       <div className="w-full flex items-center justify-between p-4 bg-white border-b border-slate-200 rounded-t-lg">
         <p>Items</p>
         <Link
-          to={"/menus/addItems"}
+          to={"/menus/menuOverview/addItems"}
           className="text-white w-[100px] h-[30px] py-1 px-2 bg-orange-400 text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
         >
           <svg
@@ -34,7 +34,7 @@ function AllItems({menus,deleteHandler}) {
               <p className="text-base">{menu.title}</p>
               <div className="flex items-center gap-3">
                 <Link
-                  to={`/menus/editItems/${menu._id}`}
+                  to={`/menus/menuOverview/editItems/${menu._id}`}
                   className="w-fit text-center p-1 bg-transparent border border-slate-300 text-orange-400 text-xs rounded"
                 >
                   <svg

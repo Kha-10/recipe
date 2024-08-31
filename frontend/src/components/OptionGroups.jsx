@@ -44,50 +44,50 @@ const OptionGroups = ({ recipes, getMenusBycategory, deleteHandler }) => {
 
   const closeDialog = () => setIsOpened(false);
 
-  const getCategories = async (id) => {
-    try {
-      let res;
-      if (id) {
-        setCategoryId(id);
-        res = await axios("/api/optionGroups/" + id);
-        if (res.status == 200) {
-          form.setValue("title", res.data.title);
-        }
-      } else {
-        res = await axios("/api/optionGroups/");
-        if (res.status == 200) {
-          setCategories(res.data);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+//   const getCategories = async (id) => {
+//     try {
+//       let res;
+//       if (id) {
+//         setCategoryId(id);
+//         res = await axios("/api/optionGroups/" + id);
+//         if (res.status == 200) {
+//           form.setValue("title", res.data.title);
+//         }
+//       } else {
+//         res = await axios("/api/optionGroups/");
+//         if (res.status == 200) {
+//           setCategories(res.data);
+//         }
+//       }
+//     } catch (error) {
+//       console.error("Error fetching categories:", error);
+//     }
+//   };
 
-  useEffect(() => {
-    getCategories();
-  }, []);
+//   useEffect(() => {
+//     getCategories();
+//   }, []);
 
-  const onSubmit = async (data) => {
-    try {
-      let res;
-      if (categoryId) {
-        res = await axios.patch("/api/categories/" + categoryId, data);
-      } else {
-        res = await axios.post("/api/categories", data);
-      }
-      if (res.status === 200) {
-        closeDialog();
-        form.setValue("title", "");
-        getCategories();
-      }
-    } catch (error) {
-      console.error("Error submitting the form", error);
-    }
-  };
+//   const onSubmit = async (data) => {
+//     try {
+//       let res;
+//       if (categoryId) {
+//         res = await axios.patch("/api/categories/" + categoryId, data);
+//       } else {
+//         res = await axios.post("/api/categories", data);
+//       }
+//       if (res.status === 200) {
+//         closeDialog();
+//         form.setValue("title", "");
+//         getCategories();
+//       }
+//     } catch (error) {
+//       console.error("Error submitting the form", error);
+//     }
+//   };
 
   const getSingleCategory = (id) => {
-    setCategoryId(id);
+    // setCategoryId(id);
     getMenusBycategory(id);
   };
 
@@ -95,26 +95,6 @@ const OptionGroups = ({ recipes, getMenusBycategory, deleteHandler }) => {
     <div className="w-[30%] flex flex-col shadow-sm border border-slate-200 rounded-t-lg h-fit">
       <div className="w-full bg-white border-b border-slate-200 rounded-t-lg h-fit text-sm p-3 flex items-center justify-between">
         <p className="w-full">Option Groups</p>
-        {/* <Link
-          to={"/menus/optionGroups/addOptions"}
-          className="text-white w-[140px] h-[30px] py-1 px-2 bg-orange-400 text-xs flex items-center justify-center gap-2 rounded hover:bg-orange-400 hover:text-white"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-3"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-          <p>Add</p>
-        </Link> */}
       </div>
       <div className="bg-white max-h-[635px] divide-y example divide-slate-100 overflow-auto">
         {recipes.length > 0 &&

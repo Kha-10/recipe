@@ -25,10 +25,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "../helper/axios";
 
 const NewOption = () => {
-  const [itemData, setItemData] = useState("");
-  const [files, setFiles] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [categories, setCategories] = useState([]);
   const form = useForm({
     defaultValues: {
       title: "",
@@ -46,24 +42,11 @@ const NewOption = () => {
 
   const { id } = useParams();
 
-  //   const [inputType, setInputType] = useState("number");
-
-  //   const formatNumber = (value) => {
-  //     if (!value) return value;
-  //     return parseInt(value).toLocaleString();
-  //   };
-
-  //   const unformatNumber = (value) => {
-  //     if (!value) return value;
-  //     return value.split(",").join("");
-  //   };
-
   const handleFocus = (event, index) => {
     const value = event.target.value;
     if (!value) return value;
     const formattedValue = value.split(",").join("");
     form.setValue(`options.${index}.price`, formattedValue);
-    // setInputType("number");
     form.setValue(`options.${index}.type`, "number");
   };
 
@@ -101,14 +84,8 @@ const NewOption = () => {
           const res = await axios.get(url);
 
           if (res.status === 200 && res.data) {
-            const {
-              title,
-              options,
-              type,
-              fixedOptionValue,
-              exactly,
-              between,
-            } = res.data;
+            const { title, options, type, fixedOptionValue, exactly, between } =
+              res.data;
 
             form.setValue("title", title);
             replace(options);
@@ -127,17 +104,6 @@ const NewOption = () => {
 
     getMenu();
   }, [id]);
-
-  useEffect(() => {
-    const getCategories = async () => {
-      const url = "/api/categories";
-      const res = await axios.get(url);
-      if (res.status == 200) {
-        setCategories(res.data);
-      }
-    };
-    getCategories();
-  }, []);
 
   const options = form.getValues("options");
   const allFilled =

@@ -85,7 +85,7 @@ app.use('/api/recipes',authMiddleware,recipieRoutes)
 
 app.use('/api/categories',authMiddleware,categoryRoutes)
 
-app.use('/api/optionGroups',optionGroupRoutes)
+app.use('/api/optionGroups',authMiddleware,optionGroupRoutes)
 
 app.use('/api/users',userRoutes)
 

@@ -108,7 +108,7 @@ function Categoty({recipes,getMenusBycategory}) {
   };
 
   return (
-    <div className="w-[30%] flex flex-col shadow-sm border border-slate-200 h-fit">
+    <div className="w-[30%] flex flex-col shadow-sm border rounded-t-lg border-slate-200 h-fit">
       <div className="w-full bg-white border-b border-slate-200 rounded-t-lg h-fit text-sm p-3 flex items-center justify-between">
         <p>Categories</p>
         <Dialog open={isOpened} onOpenChange={setIsOpened}>

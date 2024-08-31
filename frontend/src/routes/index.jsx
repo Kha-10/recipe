@@ -1,5 +1,9 @@
 import React, { useContext } from "react";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import Home from "@/Pages/Home.jsx";
 import About from "@/Pages/About.jsx";
 import Contact from "@/Pages/Contact.jsx";
@@ -14,9 +18,10 @@ import App from "@/App.jsx";
 import { AuthContext } from "@/contexts/authContext.jsx";
 import Option from "@/Pages/Option";
 import NewOption from "@/Pages/NewOption";
+import MenuSettings from "@/Pages/MenuSettings";
 
 function index() {
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   console.log(user);
 
   const router = createBrowserRouter([
@@ -26,7 +31,7 @@ function index() {
       children: [
         {
           path: "",
-          element: user?  <Home /> : <Navigate to={'/sign-in'}/>,
+          element: user ? <Home /> : <Navigate to={"/sign-in"} />,
         },
         {
           path: "/about",
@@ -38,47 +43,51 @@ function index() {
         },
         {
           path: "/recipes/create",
-          element: user ? <RecipeForm /> : <Navigate to={'/sign-in'}/> ,
+          element: user ? <RecipeForm /> : <Navigate to={"/sign-in"} />,
         },
         {
           path: "/orders",
-          element: user ? <Orders /> : <Navigate to={'/sign-in'}/>,
+          element: user ? <Orders /> : <Navigate to={"/sign-in"} />,
         },
         {
           path: "/menus",
-          element: user ? <Menus /> : <Navigate to={'/sign-in'}/>,
+          element: user ? <MenuSettings /> : <Navigate to={"/sign-in"} />,
+        },
+        {
+          path: "/menus/menuOverview",
+          element:  <Menus /> ,
         },
         {
           path: "/orderSettings",
-          element: user ? <OrderSettings /> : <Navigate to={'/sign-in'}/> ,
+          element: user ? <OrderSettings /> : <Navigate to={"/sign-in"} />,
         },
         {
-          path: "/menus/addItems",
-          element: user ? <AddItems /> : <Navigate to={'/sign-in'}/>,
+          path: "/menus/menuOverview/addItems",
+          element: user ? <AddItems /> : <Navigate to={"/sign-in"} />,
         },
         {
-          path: "/menus/editItems/:id",
-          element: user ? <AddItems /> : <Navigate to={'/sign-in'}/> ,
+          path: "/menus/menuOverview/editItems/:id",
+          element: user ? <AddItems /> : <Navigate to={"/sign-in"} />,
         },
         {
-            path: "/menus/optionGroups",
-            element: <Option/> ,
-          },
-          {
-            path: "/menus/optionGroups/addOptions",
-            element: <NewOption />,
-          },
-          {
-            path: "/menus/optionGroups/editOptions/:id",
-            element: <NewOption />,
-          },
+          path: "/menus/optionGroups",
+          element: user ? <Option /> : <Navigate to={"/sign-in"} />,
+        },
+        {
+          path: "/menus/optionGroups/addOptions",
+          element: <NewOption />,
+        },
+        {
+          path: "/menus/optionGroups/editOptions/:id",
+          element: <NewOption />,
+        },
         {
           path: "/sign-up",
-          element: !user ? <SignUpForm /> : <Navigate to={'/'}/>,
+          element: !user ? <SignUpForm /> : <Navigate to={"/"} />,
         },
         {
           path: "/sign-in",
-          element: !user ? <SignInForm /> : <Navigate to={'/'}/>,
+          element: !user ? <SignInForm /> : <Navigate to={"/"} />,
         },
       ],
     },

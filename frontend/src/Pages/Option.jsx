@@ -24,11 +24,11 @@ function Option() {
 
   let getMenusBycategory = async (id) => {
     try {
-      let url = "/api/optionGroups/" + id;
+      let url = '/api/optionGroups/'+id ;
       const res = await axios(url);
-      console.log(res.data.options);
+      console.log(res.data);
       if (res.status === 200) {
-        setMenus(res.data.options);
+        setMenus(res.data);
       } else {
         console.error("Failed to fetch recipes");
       }
