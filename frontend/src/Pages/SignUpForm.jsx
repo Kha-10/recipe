@@ -19,7 +19,7 @@ function SignUpForm() {
   const [errors, setErrors] = useState(null);
   let navigate = useNavigate();
 
-  const {dispatch} = useContext(AuthContext)
+  const { dispatch, setLoading } = useContext(AuthContext);
 
   const form = useForm({
     defaultValues: {
@@ -31,21 +31,20 @@ function SignUpForm() {
 
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       setErrors(null);
-      let res = await axios.post(
-        "/api/users/register",
-        data,
-        {
-          withCredentials: true,
-        }
-      );
+      let res = await axios.post("/api/users/register", data, {
+        withCredentials: true,
+      });
       if (res.status == 200) {
-        dispatch({type :'REGISTER',payload : res.data.user})
+        dispatch({ type: "REGISTER", payload: res.data.user });
         navigate("/");
       }
     } catch (error) {
       console.log("Error submitting the form", error);
       setErrors(error.response.data.errors);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,7 +134,9 @@ function SignUpForm() {
             <Button className="bg-orange-500 text-white">Register</Button>
             <span className="text-sm text-gray-400">
               Already have an account?
-              <Link to={'/sign-in'} className=" text-orange-400 ml-1">Sign in</Link>
+              <Link to={"/sign-in"} className=" text-orange-400 ml-1">
+                Sign in
+              </Link>
             </span>
           </div>
         </form>

@@ -4,13 +4,11 @@ require('dotenv').config()
 
 const morgan = require('morgan')
 
-const recipieRoutes = require('./routes/recipes')
+const productRoutes = require('./routes/products')
 
 const categoryRoutes = require('./routes/category')
 
 const userRoutes = require('./routes/users')
-
-const optionGroupRoutes = require('./routes/optionGroup')
 
 const mongoose = require('mongoose')
 
@@ -81,11 +79,10 @@ app.get('/',(req,res)=> {
     // return res.render('email')
 })
 
-app.use('/api/recipes',authMiddleware,recipieRoutes)
+
+app.use('/api/products',authMiddleware,productRoutes)
 
 app.use('/api/categories',authMiddleware,categoryRoutes)
-
-app.use('/api/optionGroups',authMiddleware,optionGroupRoutes)
 
 app.use('/api/users',userRoutes)
 

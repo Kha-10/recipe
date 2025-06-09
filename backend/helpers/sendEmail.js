@@ -17,9 +17,9 @@ const sendEmail = async ({viewFilename,data,from,to}) => {
             const info = await transport.sendMail({
                 from,
                 to,
-                subject: "Hello ✔", // Subject line
-                text: "Hello world?", // plain text body
-                html: dataString, // html body
+                subject: "Hello ✔",
+                text: "Hello world?",
+                html: dataString,
               });
             console.log("Message sent: %s", dataString);
       } catch (error) {

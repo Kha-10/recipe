@@ -1,26 +1,23 @@
 const express = require("express");
-const { body } = require("express-validator");
+const UserController = require("../controllers/UsersController");
 const handleErrorMessage = require("../middlewares/handleErrorMessage");
-const AuthMiddleware = require("../middlewares/authMiddleware")
+const { body } = require("express-validator");
+const User = require("../models/User");
+const AuthMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-const UsersController = require("../controllers/UsersController");
-const User = require("../models/User");
-
-router.get("/me",AuthMiddleware, UsersController.me);
-
-router.post("/login", UsersController.login);
-
-router.post("/logout", UsersController.logout);
+router.get("/me", AuthMiddleware, UserController.me);
+router.post("/login", UserController.login);
+router.post("/logout", UserController.logout);
 
 router.post(
   "/register",
   [
-    body("username").notEmpty(),
+    body("name").notEmpty(),
     body("email").notEmpty(),
     body("email").custom(async (value) => {
-      const user = await User.findOne({email : value});
+      const user = await User.findOne({ email: value });
       if (user) {
         throw new Error("E-mail already in use");
       }
@@ -28,7 +25,7 @@ router.post(
     body("password").notEmpty(),
   ],
   handleErrorMessage,
-  UsersController.register
+  UserController.register
 );
 
 module.exports = router;

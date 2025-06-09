@@ -1,36 +1,44 @@
 const User = require("../models/User");
-const createToken = require("../helpers/createJwt")
+const createToken = require("../helpers/createToken");
 
-const UsersController = {
-  me : async (req,res) => {
-    return res.json(req.user)
+const UserController = {
+  me: async (req, res) => {
+    return res.json(req.user);
+  },
+  login: async (req, res) => {
+    console.log('i work');
+    try {
+      let { email, password } = req.body;
+      let user = await User.login(email, password);
+      console.log('mmsp',user);
+      let token = createToken(user._id);
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        maxAge: 3 * 24 * 60 * 60 * 1000,
+      });
+      return res.json({ user, token });
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
+    }
   },
   register: async (req, res) => {
     try {
-      const { username, email, password } = req.body;
-      const user = await User.register(username,email,password);
-      const token = createToken(user._id);
-      res.cookie('jwt',token,{httpOnly : true, maxAge : 3 * 24 * 60 * 60 * 1000})
-      return res.json({user,token});
-    } catch (error) {
-        return res.status(400).json({error : error.message})
+      let { name, email, password } = req.body;
+      let user = await User.register(name, email, password);
+      let token = createToken(user._id);
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        maxAge: 3 * 24 * 60 * 60 * 1000,
+      });
+      return res.json({ user, token });
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
     }
   },
-  login: async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.login(email,password);
-        const token = createToken(user._id);
-        res.cookie('jwt',token,{httpOnly : true, maxAge : 3 * 24 * 60 * 60 * 1000})
-        return res.json({user,token});
-      } catch (error) {
-          return res.status(400).json({error : error.message})
-      }
-  },
-  logout: async (req, res) => {
-    res.cookie('jwt','',{ maxAge :1})
-    return res.json({msg  : 'user logged out'});
+  logout: (req, res) => {
+    res.cookie("jwt", "", { maxAge: 1 });
+    return res.json({ message: "user logged out" });
   },
 };
 
-module.exports = UsersController;
+module.exports = UserController;
